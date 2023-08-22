@@ -74,6 +74,67 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-202307/使用uwsgi部署flask应用" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/07/17/202307/%E4%BD%BF%E7%94%A8uwsgi%E9%83%A8%E7%BD%B2flask%E5%BA%94%E7%94%A8/" class="article-date">
+  <time class="dt-published" datetime="2023-07-17T13:03:12.000Z" itemprop="datePublished">2023-07-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/07/17/202307/%E4%BD%BF%E7%94%A8uwsgi%E9%83%A8%E7%BD%B2flask%E5%BA%94%E7%94%A8/">使用uwsgi部署flask应用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>在写 flask 程序时，调试通常使用 flask 内置的 wsgi 服务，但在部署时，如果还这么办，会出一些意想不到的问题。</p>
+<p>当我将一个 flask 程序部署到远程服务器时，会出现以下几种情况：</p>
+<ul>
+<li><code>python app.py</code> —&gt; 服务可以正常访问</li>
+<li><code>python app.py &amp;</code> —&gt; 服务可以正常访问</li>
+</ul>
+<p>我不可能一直连接服务器，为了正常退出终端，通常使用第二种方式，让服务在后台运行。</p>
+<p>当服务在后台运行时，如果我退出终端，断开与远程主机的连接，服务将无法正常访问，会提醒 <code>服务器内部错误(500)</code>。</p>
+<p>我发现应该时 flask 内置的 wsgi 服务的问题导致的，便想着用 uwsgi 来运行 flask 的服务。</p>
+<p>此是为缘起。</p>
+<h2 id="一、uwsgi-的配置"><a href="#一、uwsgi-的配置" class="headerlink" title="一、uwsgi 的配置"></a>一、uwsgi 的配置</h2><p>核心就是一个配置文件，安装是没有必要多说的。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">; uwsgi.ini</span></span><br><span class="line"><span class="section">[uwsgi]</span></span><br><span class="line"><span class="comment"># 监听地址及端口</span></span><br><span class="line"><span class="attr">http</span> = <span class="number">0.0</span>.<span class="number">0.0</span>:<span class="number">5000</span></span><br><span class="line"><span class="comment"># 程序文件</span></span><br><span class="line"><span class="attr">wsgi-file</span> = app.py</span><br><span class="line"><span class="comment"># 程序函数名</span></span><br><span class="line"><span class="attr">callable</span> = app</span><br><span class="line"><span class="comment"># 程序目录</span></span><br><span class="line"><span class="attr">chdir</span> = /root/ocr_server/</span><br><span class="line"><span class="comment"># 虚拟环境目录</span></span><br><span class="line"><span class="attr">home</span> = /root/miniconda3/envs/ocr</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="二、相关命令"><a href="#二、相关命令" class="headerlink" title="二、相关命令"></a>二、相关命令</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">uwsgi -d --ini uwsgi.ini</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在后台运行</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">-d 表示在后台运行</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">--ini 表示使用 ini 配置文件</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">uwsgi --stop uwsgi.pid</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">pkill -f uwsgi -9</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">关闭</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">此两句是抄来，待尝试</span></span><br><span class="line"></span><br><span class="line">uwsgi --reload uwsgi.pid</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重启</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="三、-相关链接"><a href="#三、-相关链接" class="headerlink" title="三、 相关链接"></a>三、 相关链接</h2><ul>
+<li><p>参考： <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/426546446">https://zhuanlan.zhihu.com/p/426546446</a></p>
+</li>
+<li><p>uwsgi 文档： <a target="_blank" rel="noopener" href="https://uwsgi-docs.readthedocs.io/en/latest/">https://uwsgi-docs.readthedocs.io/en/latest/</a></p>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gty20010709.github.io/2023/07/17/202307/%E4%BD%BF%E7%94%A8uwsgi%E9%83%A8%E7%BD%B2flask%E5%BA%94%E7%94%A8/" data-id="cllmf780m000e28d529tyg0sf" data-title="使用uwsgi部署flask应用" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flask/" rel="tag">flask</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/uwsgi/" rel="tag">uwsgi</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-202307/如何用Python获取本机的IPV4地址" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2023/07/17/202307/%E5%A6%82%E4%BD%95%E7%94%A8Python%E8%8E%B7%E5%8F%96%E6%9C%AC%E6%9C%BA%E7%9A%84IPV4%E5%9C%B0%E5%9D%80/" class="article-date">
@@ -126,7 +187,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/07/17/202307/%E5%A6%82%E4%BD%95%E7%94%A8Python%E8%8E%B7%E5%8F%96%E6%9C%AC%E6%9C%BA%E7%9A%84IPV4%E5%9C%B0%E5%9D%80/" data-id="clkw6nmzm0005hsd55vlnbl2o" data-title="如何用Python获取本机的IPV4地址" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/07/17/202307/%E5%A6%82%E4%BD%95%E7%94%A8Python%E8%8E%B7%E5%8F%96%E6%9C%AC%E6%9C%BA%E7%9A%84IPV4%E5%9C%B0%E5%9D%80/" data-id="cllmf780v001m28d5h82m20p5" data-title="如何用Python获取本机的IPV4地址" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
       
       
       
@@ -165,7 +226,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/" rel="tag">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/asyncache/" rel="tag">asyncache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/barrier/" rel="tag">barrier</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cachetools/" rel="tag">cachetools</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crossref/" rel="tag">crossref</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish/" rel="tag">fish</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish-shell/" rel="tag">fish-shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flask/" rel="tag">flask</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/" rel="tag">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/" rel="tag">https</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ip/" rel="tag">ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nvm/" rel="tag">nvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scholar/" rel="tag">scholar</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/socket/" rel="tag">socket</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssl/" rel="tag">ssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/uwsgi/" rel="tag">uwsgi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vercel/" rel="tag">vercel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82%E8%B0%88/" rel="tag">杂谈</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/" rel="tag">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/asyncache/" rel="tag">asyncache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/barrier/" rel="tag">barrier</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cachetools/" rel="tag">cachetools</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crossref/" rel="tag">crossref</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish/" rel="tag">fish</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish-shell/" rel="tag">fish-shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flask/" rel="tag">flask</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/" rel="tag">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/" rel="tag">https</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ip/" rel="tag">ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nvm/" rel="tag">nvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scholar/" rel="tag">scholar</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/socket/" rel="tag">socket</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssl/" rel="tag">ssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/" rel="tag">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/uwsgi/" rel="tag">uwsgi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vercel/" rel="tag">vercel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82%E8%B0%88/" rel="tag">杂谈</a></li></ul>
     </div>
   </div>
 
@@ -175,7 +236,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/asyncache/" style="font-size: 10px;">asyncache</a> <a href="/tags/barrier/" style="font-size: 10px;">barrier</a> <a href="/tags/cachetools/" style="font-size: 10px;">cachetools</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/crossref/" style="font-size: 10px;">crossref</a> <a href="/tags/fish/" style="font-size: 10px;">fish</a> <a href="/tags/fish-shell/" style="font-size: 10px;">fish-shell</a> <a href="/tags/flask/" style="font-size: 10px;">flask</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/ip/" style="font-size: 10px;">ip</a> <a href="/tags/nvm/" style="font-size: 10px;">nvm</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/scholar/" style="font-size: 10px;">scholar</a> <a href="/tags/socket/" style="font-size: 10px;">socket</a> <a href="/tags/ssl/" style="font-size: 10px;">ssl</a> <a href="/tags/uwsgi/" style="font-size: 10px;">uwsgi</a> <a href="/tags/vercel/" style="font-size: 10px;">vercel</a> <a href="/tags/%E6%9D%82%E8%B0%88/" style="font-size: 10px;">杂谈</a>
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/asyncache/" style="font-size: 10px;">asyncache</a> <a href="/tags/barrier/" style="font-size: 10px;">barrier</a> <a href="/tags/cachetools/" style="font-size: 10px;">cachetools</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/crossref/" style="font-size: 10px;">crossref</a> <a href="/tags/fish/" style="font-size: 10px;">fish</a> <a href="/tags/fish-shell/" style="font-size: 10px;">fish-shell</a> <a href="/tags/flask/" style="font-size: 10px;">flask</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/ip/" style="font-size: 10px;">ip</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/nvm/" style="font-size: 10px;">nvm</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/scholar/" style="font-size: 10px;">scholar</a> <a href="/tags/socket/" style="font-size: 10px;">socket</a> <a href="/tags/ssl/" style="font-size: 10px;">ssl</a> <a href="/tags/ubuntu/" style="font-size: 10px;">ubuntu</a> <a href="/tags/uwsgi/" style="font-size: 10px;">uwsgi</a> <a href="/tags/vercel/" style="font-size: 10px;">vercel</a> <a href="/tags/%E6%9D%82%E8%B0%88/" style="font-size: 10px;">杂谈</a>
     </div>
   </div>
 
@@ -197,6 +258,10 @@
       <ul>
         
           <li>
+            <a href="/2023/08/22/%E5%9C%A8ubuntu%E4%B8%8A%E5%AE%89%E8%A3%85mongodb/">在ubuntu上安装mongodb</a>
+          </li>
+        
+          <li>
             <a href="/2023/08/04/%E4%BD%BF%E7%94%A8%E7%BC%93%E5%AD%98%E6%8F%90%E9%AB%98Python%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%80%A7%E8%83%BD/">使用缓存提高Python程序的性能</a>
           </li>
         
@@ -210,10 +275,6 @@
         
           <li>
             <a href="/2023/07/28/202307/Crossref-%E5%BC%80%E6%94%BE%E7%9A%84%E8%AE%BA%E6%96%87%E5%85%83%E6%95%B0%E6%8D%AE%E6%A3%80%E7%B4%A2API/">Crossref:开放的论文元数据检索API</a>
-          </li>
-        
-          <li>
-            <a href="/2023/07/23/202307/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%96%9D%E5%95%A4%E9%85%92/">第一次喝啤酒</a>
           </li>
         
       </ul>

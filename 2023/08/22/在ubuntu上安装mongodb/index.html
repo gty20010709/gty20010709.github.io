@@ -4,15 +4,20 @@
   <meta charset="utf-8">
   
   
-  <title>Tag: scholar | Theo&#39;s Blog</title>
+  <title>在ubuntu上安装mongodb | Theo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Theo&#39;s Blog">
-<meta property="og:url" content="https://gty20010709.github.io/tags/scholar/index.html">
+  <meta name="description" content="123456789101112sudo apt-get install gnupg curlcurl -fsSL https:&#x2F;&#x2F;pgp.mongodb.com&#x2F;server-7.0.asc | sudo gpg -o &#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;mongodb-server-7.0.gpg --dearmorsudo cp &#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;mongodb-se">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在ubuntu上安装mongodb">
+<meta property="og:url" content="https://gty20010709.github.io/2023/08/22/%E5%9C%A8ubuntu%E4%B8%8A%E5%AE%89%E8%A3%85mongodb/index.html">
 <meta property="og:site_name" content="Theo&#39;s Blog">
+<meta property="og:description" content="123456789101112sudo apt-get install gnupg curlcurl -fsSL https:&#x2F;&#x2F;pgp.mongodb.com&#x2F;server-7.0.asc | sudo gpg -o &#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;mongodb-server-7.0.gpg --dearmorsudo cp &#x2F;usr&#x2F;share&#x2F;keyrings&#x2F;mongodb-se">
 <meta property="og:locale">
+<meta property="article:published_time" content="2023-08-22T14:18:38.000Z">
+<meta property="article:modified_time" content="2023-08-22T14:46:58.140Z">
 <meta property="article:author" content="Theo Cheng">
-<meta property="article:tag" content="Python, Chinese">
+<meta property="article:tag" content="ubuntu">
+<meta property="article:tag" content="mongodb">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Theo's Blog" type="application/atom+xml">
@@ -72,39 +77,55 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2023" class="archive-year">2023</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2023/07/28/202307/Crossref-%E5%BC%80%E6%94%BE%E7%9A%84%E8%AE%BA%E6%96%87%E5%85%83%E6%95%B0%E6%8D%AE%E6%A3%80%E7%B4%A2API/" class="archive-article-date">
-  <time class="dt-published" datetime="2023-07-28T12:27:41.000Z" itemprop="datePublished">Jul 28</time>
+        <section id="main"><article id="post-在ubuntu上安装mongodb" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/08/22/%E5%9C%A8ubuntu%E4%B8%8A%E5%AE%89%E8%A3%85mongodb/" class="article-date">
+  <time class="dt-published" datetime="2023-08-22T14:18:38.000Z" itemprop="datePublished">2023-08-22</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/07/28/202307/Crossref-%E5%BC%80%E6%94%BE%E7%9A%84%E8%AE%BA%E6%96%87%E5%85%83%E6%95%B0%E6%8D%AE%E6%A3%80%E7%B4%A2API/">Crossref:开放的论文元数据检索API</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      在ubuntu上安装mongodb
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">sudo apt-get install gnupg curl</span><br><span class="line">curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor</span><br><span class="line">sudo cp /usr/share/keyrings/mongodb-server-7.0.gpg /etc/apt/trusted.gpg.d</span><br><span class="line">echo &quot;deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse&quot; | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install -y mongodb-org mongodb-org-database mongodb-org-server mongodb-mongosh mongodb-org-mongos mongodb-org-tools</span><br><span class="line"></span><br><span class="line">sudo systemctl start mongod # 启动</span><br><span class="line">sudo systemctl enable mongod # 开机自启</span><br><span class="line">sudo systemctl status mongod # 查看状态</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gty20010709.github.io/2023/08/22/%E5%9C%A8ubuntu%E4%B8%8A%E5%AE%89%E8%A3%85mongodb/" data-id="cllmf780h000628d5gsklch03" data-title="在ubuntu上安装mongodb" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ubuntu/" rel="tag">ubuntu</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/08/04/%E4%BD%BF%E7%94%A8%E7%BC%93%E5%AD%98%E6%8F%90%E9%AB%98Python%E7%A8%8B%E5%BA%8F%E7%9A%84%E6%80%A7%E8%83%BD/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Älter</strong>
+      <div class="article-nav-title">使用缓存提高Python程序的性能</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 
 </section>
