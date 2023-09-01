@@ -4,21 +4,15 @@
   <meta charset="utf-8">
   
   
-  <title>使用uwsgi部署flask应用 | Theo&#39;s Blog</title>
+  <title>Tag: ssh | Theo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="〇、缘起在写 flask 程序时，调试通常使用 flask 内置的 wsgi 服务，但在部署时，如果还这么办，会出一些意想不到的问题。 当我将一个 flask 程序部署到远程服务器时，会出现以下几种情况：  python app.py —&gt; 服务可以正常访问 python app.py &amp; —&gt; 服务可以正常访问  我不可能一直连接服务器，为了正常退出终端，通常使用第二种方式，">
-<meta property="og:type" content="article">
-<meta property="og:title" content="使用uwsgi部署flask应用">
-<meta property="og:url" content="https://gty20010709.github.io/2023/07/17/202307/%E4%BD%BF%E7%94%A8uwsgi%E9%83%A8%E7%BD%B2flask%E5%BA%94%E7%94%A8/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Theo&#39;s Blog">
+<meta property="og:url" content="https://gty20010709.github.io/tags/ssh/index.html">
 <meta property="og:site_name" content="Theo&#39;s Blog">
-<meta property="og:description" content="〇、缘起在写 flask 程序时，调试通常使用 flask 内置的 wsgi 服务，但在部署时，如果还这么办，会出一些意想不到的问题。 当我将一个 flask 程序部署到远程服务器时，会出现以下几种情况：  python app.py —&gt; 服务可以正常访问 python app.py &amp; —&gt; 服务可以正常访问  我不可能一直连接服务器，为了正常退出终端，通常使用第二种方式，">
 <meta property="og:locale">
-<meta property="article:published_time" content="2023-07-17T13:03:12.000Z">
-<meta property="article:modified_time" content="2023-07-17T13:59:51.000Z">
 <meta property="article:author" content="Theo Cheng">
-<meta property="article:tag" content="python">
-<meta property="article:tag" content="flask">
-<meta property="article:tag" content="uwsgi">
+<meta property="article:tag" content="Python, Chinese">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Theo's Blog" type="application/atom+xml">
@@ -78,84 +72,39 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-202307/使用uwsgi部署flask应用" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/07/17/202307/%E4%BD%BF%E7%94%A8uwsgi%E9%83%A8%E7%BD%B2flask%E5%BA%94%E7%94%A8/" class="article-date">
-  <time class="dt-published" datetime="2023-07-17T13:03:12.000Z" itemprop="datePublished">2023-07-17</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+        <section id="main">
   
-    <h1 class="p-name article-title" itemprop="headline name">
-      使用uwsgi部署flask应用
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2023" class="archive-year">2023</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2023/09/01/%E5%A6%82%E4%BD%95%E5%9C%A8Manjaro%E4%B8%8A%E5%90%AF%E7%94%A8ssh/" class="archive-article-date">
+  <time class="dt-published" datetime="2023-09-01T13:07:09.000Z" itemprop="datePublished">Sep 1</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2023/09/01/%E5%A6%82%E4%BD%95%E5%9C%A8Manjaro%E4%B8%8A%E5%90%AF%E7%94%A8ssh/">如何在Manjaro上启用ssh</a>
     </h1>
   
 
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>在写 flask 程序时，调试通常使用 flask 内置的 wsgi 服务，但在部署时，如果还这么办，会出一些意想不到的问题。</p>
-<p>当我将一个 flask 程序部署到远程服务器时，会出现以下几种情况：</p>
-<ul>
-<li><code>python app.py</code> —&gt; 服务可以正常访问</li>
-<li><code>python app.py &amp;</code> —&gt; 服务可以正常访问</li>
-</ul>
-<p>我不可能一直连接服务器，为了正常退出终端，通常使用第二种方式，让服务在后台运行。</p>
-<p>当服务在后台运行时，如果我退出终端，断开与远程主机的连接，服务将无法正常访问，会提醒 <code>服务器内部错误(500)</code>。</p>
-<p>我发现应该时 flask 内置的 wsgi 服务的问题导致的，便想着用 uwsgi 来运行 flask 的服务。</p>
-<p>此是为缘起。</p>
-<h2 id="一、uwsgi-的配置"><a href="#一、uwsgi-的配置" class="headerlink" title="一、uwsgi 的配置"></a>一、uwsgi 的配置</h2><p>核心就是一个配置文件，安装是没有必要多说的。</p>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">; uwsgi.ini</span></span><br><span class="line"><span class="section">[uwsgi]</span></span><br><span class="line"><span class="comment"># 监听地址及端口</span></span><br><span class="line"><span class="attr">http</span> = <span class="number">0.0</span>.<span class="number">0.0</span>:<span class="number">5000</span></span><br><span class="line"><span class="comment"># 程序文件</span></span><br><span class="line"><span class="attr">wsgi-file</span> = app.py</span><br><span class="line"><span class="comment"># 程序函数名</span></span><br><span class="line"><span class="attr">callable</span> = app</span><br><span class="line"><span class="comment"># 程序目录</span></span><br><span class="line"><span class="attr">chdir</span> = /root/ocr_server/</span><br><span class="line"><span class="comment"># 虚拟环境目录</span></span><br><span class="line"><span class="attr">home</span> = /root/miniconda3/envs/ocr</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="二、相关命令"><a href="#二、相关命令" class="headerlink" title="二、相关命令"></a>二、相关命令</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">uwsgi -d --ini uwsgi.ini</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在后台运行</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">-d 表示在后台运行</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">--ini 表示使用 ini 配置文件</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">uwsgi --stop uwsgi.pid</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">pkill -f uwsgi -9</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">关闭</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">此两句是抄来，待尝试</span></span><br><span class="line"></span><br><span class="line">uwsgi --reload uwsgi.pid</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重启</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h2 id="三、-相关链接"><a href="#三、-相关链接" class="headerlink" title="三、 相关链接"></a>三、 相关链接</h2><ul>
-<li><p>参考： <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/426546446">https://zhuanlan.zhihu.com/p/426546446</a></p>
-</li>
-<li><p>uwsgi 文档： <a target="_blank" rel="noopener" href="https://uwsgi-docs.readthedocs.io/en/latest/">https://uwsgi-docs.readthedocs.io/en/latest/</a></p>
-</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/07/17/202307/%E4%BD%BF%E7%94%A8uwsgi%E9%83%A8%E7%BD%B2flask%E5%BA%94%E7%94%A8/" data-id="cllmf780m000e28d529tyg0sf" data-title="使用uwsgi部署flask应用" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flask/" rel="tag">flask</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/uwsgi/" rel="tag">uwsgi</a></li></ul>
-
-    </footer>
+    </header>
   </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2023/07/17/202307/hexo%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Neuer</strong>
-      <div class="article-nav-title">
-        
-          hexo使用笔记
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2023/07/17/202307/%E5%A6%82%E4%BD%95%E7%94%A8Python%E8%8E%B7%E5%8F%96%E6%9C%AC%E6%9C%BA%E7%9A%84IPV4%E5%9C%B0%E5%9D%80/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Älter</strong>
-      <div class="article-nav-title">如何用Python获取本机的IPV4地址</div>
-    </a>
-  
-</nav>
-
-  
 </article>
+  
+  
+    </div></section>
+  
 
 
 </section>
