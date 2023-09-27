@@ -4,19 +4,21 @@
   <meta charset="utf-8">
   
   
-  <title>第一次喝啤酒 | Theo&#39;s Blog</title>
+  <title>Python中的延迟绑定 | Theo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="第一口进入嘴里，舌头都麻了。咽下去后，喉头有种淡淡的苦味。之后的每一口，舌头都有麻麻的感觉。一罐从中午喝到下午，没有喝醉，没有感受到酒的味道。">
+  <meta name="description" content="-1、PS此文由 ChatGPT 生成， 经人工审定。 〇、缘起今天在牛客刷题，遇到了延迟绑定的问题。之前看书（《Python之美》or《流畅的Python》）时，其实看到过，但一时没想起来。因此，在ChatGPT的辅助下，完成了这篇文章。 12345678910111213# 牛客题目def fn():    t &#x3D; []    i &#x3D; 0    while i &lt; 2:        t">
 <meta property="og:type" content="article">
-<meta property="og:title" content="第一次喝啤酒">
-<meta property="og:url" content="https://gty20010709.github.io/2023/07/23/202307/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%96%9D%E5%95%A4%E9%85%92/index.html">
+<meta property="og:title" content="Python中的延迟绑定">
+<meta property="og:url" content="https://gty20010709.github.io/2023/09/27/Python%E4%B8%AD%E7%9A%84%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A%EF%BC%88byChatGPT%EF%BC%89/index.html">
 <meta property="og:site_name" content="Theo&#39;s Blog">
-<meta property="og:description" content="第一口进入嘴里，舌头都麻了。咽下去后，喉头有种淡淡的苦味。之后的每一口，舌头都有麻麻的感觉。一罐从中午喝到下午，没有喝醉，没有感受到酒的味道。">
+<meta property="og:description" content="-1、PS此文由 ChatGPT 生成， 经人工审定。 〇、缘起今天在牛客刷题，遇到了延迟绑定的问题。之前看书（《Python之美》or《流畅的Python》）时，其实看到过，但一时没想起来。因此，在ChatGPT的辅助下，完成了这篇文章。 12345678910111213# 牛客题目def fn():    t &#x3D; []    i &#x3D; 0    while i &lt; 2:        t">
 <meta property="og:locale">
-<meta property="article:published_time" content="2023-07-23T15:21:02.000Z">
-<meta property="article:modified_time" content="2023-07-23T15:24:12.000Z">
+<meta property="article:published_time" content="2023-09-27T13:21:39.000Z">
+<meta property="article:modified_time" content="2023-09-27T13:32:00.587Z">
 <meta property="article:author" content="Theo Cheng">
-<meta property="article:tag" content="杂谈">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="延迟绑定">
+<meta property="article:tag" content="闭包">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Theo's Blog" type="application/atom+xml">
@@ -76,10 +78,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-202307/第一次喝啤酒" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-Python中的延迟绑定（byChatGPT）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2023/07/23/202307/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%96%9D%E5%95%A4%E9%85%92/" class="article-date">
-  <time class="dt-published" datetime="2023-07-23T15:21:02.000Z" itemprop="datePublished">2023-07-23</time>
+    <a href="/2023/09/27/Python%E4%B8%AD%E7%9A%84%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A%EF%BC%88byChatGPT%EF%BC%89/" class="article-date">
+  <time class="dt-published" datetime="2023-09-27T13:21:39.000Z" itemprop="datePublished">2023-09-27</time>
 </a>
     
   </div>
@@ -90,7 +92,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      第一次喝啤酒
+      Python中的延迟绑定
     </h1>
   
 
@@ -98,16 +100,42 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <p>第一口进入嘴里，舌头都麻了。咽下去后，喉头有种淡淡的苦味。之后的每一口，舌头都有麻麻的感觉。一罐从中午喝到下午，没有喝醉，没有感受到酒的味道。</p>
+        <h2 id="1、PS"><a href="#1、PS" class="headerlink" title="-1、PS"></a>-1、PS</h2><p>此文由 ChatGPT 生成， 经人工审定。</p>
+<h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>今天在牛客刷题，遇到了延迟绑定的问题。之前看书（《Python之美》or《流畅的Python》）时，其实看到过，但一时没想起来。因此，在ChatGPT的辅助下，完成了这篇文章。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 牛客题目</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">fn</span>():</span><br><span class="line">    t = []</span><br><span class="line">    i = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> i &lt; <span class="number">2</span>:</span><br><span class="line">        t.append(<span class="keyword">lambda</span> x: <span class="built_in">print</span>(i*x, end=<span class="string">&quot;,&quot;</span>))</span><br><span class="line">        i += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> t</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> fn()</span><br><span class="line">    f(<span class="number">2</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="一、Python中的延迟绑定"><a href="#一、Python中的延迟绑定" class="headerlink" title="一、Python中的延迟绑定"></a>一、Python中的延迟绑定</h2><p>Python中的延迟绑定（Late Binding）是一个概念，通常与闭包（Closures）和匿名函数（Lambda Functions）有关。它指的是在函数内部访问非局部变量（外部函数的变量）时，不会立即绑定到该变量的值，而是在函数被调用时才绑定。这可以导致一些令人惊讶的行为，特别是在循环中创建闭包时。</p>
+<p>下面详细解释延迟绑定的概念：</p>
+<ol>
+<li><p><strong>闭包与局部作用域</strong>：在Python中，函数可以嵌套在其他函数内部。当一个内部函数引用了外部函数的变量时，就会创建一个闭包。闭包是一个函数对象，它不仅包含了代码，还包含了创建它的环境（也就是外部函数的变量）。</p>
+</li>
+<li><p><strong>延迟绑定的例子</strong>：在一个闭包中，如果内部函数尝试修改外部函数的变量，Python会将该变量视为自由变量（Free Variable）。这个自由变量在函数定义时并没有被绑定到特定的值，而是在函数被调用时动态绑定。这就是延迟绑定的概念。</p>
+</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">outer</span>():</span><br><span class="line">    x = <span class="number">10</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">inner</span>():</span><br><span class="line">        <span class="built_in">print</span>(x)</span><br><span class="line">    <span class="keyword">return</span> inner</span><br><span class="line"></span><br><span class="line">closure = outer()</span><br><span class="line">closure()  <span class="comment"># 输出：10</span></span><br></pre></td></tr></table></figure>
+
+<p>在上面的例子中，<code>inner</code> 函数引用了外部函数 <code>outer</code> 中的变量 <code>x</code>。这个变量在 <code>inner</code> 函数定义时没有被绑定到具体的值，只有在调用 <code>closure</code> 时才绑定到 <code>10</code>。</p>
+<ol start="3">
+<li><strong>循环中的延迟绑定</strong>：延迟绑定在循环中容易引发问题，因为循环变量经常被用于创建闭包。在循环中创建闭包时，闭包内部引用的是循环变量的最终值，而不是循环中每次迭代的值。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">create_multipliers</span>():</span><br><span class="line">    multipliers = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">        multipliers.append(<span class="keyword">lambda</span> x: x * i)</span><br><span class="line">    <span class="keyword">return</span> multipliers</span><br><span class="line"></span><br><span class="line">multipliers = create_multipliers()</span><br><span class="line"><span class="built_in">print</span>([multiplier(<span class="number">2</span>) <span class="keyword">for</span> multiplier <span class="keyword">in</span> multipliers])</span><br><span class="line"><span class="comment"># 输出：[8, 8, 8, 8, 8]</span></span><br></pre></td></tr></table></figure>
+
+<p>在上面的例子中，<code>multipliers</code> 列表包含了五个闭包，每个闭包都应该将传入的参数与不同的 <code>i</code> 相乘。但实际上，它们都引用了最终的 <code>i</code> 值，即 <code>4</code>，所以在调用时，它们都返回了 <code>8</code>。</p>
+<p>为了避免循环中的延迟绑定问题，可以通过在闭包内部传递循环变量的值来解决，例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">create_multipliers_fixed</span>():</span><br><span class="line">    multipliers = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">        multipliers.append(<span class="keyword">lambda</span> x, i=i: x * i)</span><br><span class="line">    <span class="keyword">return</span> multipliers</span><br><span class="line"></span><br><span class="line">multipliers_fixed = create_multipliers_fixed()</span><br><span class="line"><span class="built_in">print</span>([multiplier(<span class="number">2</span>) <span class="keyword">for</span> multiplier <span class="keyword">in</span> multipliers_fixed])</span><br><span class="line"><span class="comment"># 输出：[0, 2, 4, 6, 8]</span></span><br></pre></td></tr></table></figure>
+
+<p>在这个修复后的版本中，我们通过在闭包内部传递 <code>i=i</code> 来绑定循环变量的值，确保每个闭包引用的是不同的 <code>i</code> 值，从而得到正确的结果。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/07/23/202307/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%96%9D%E5%95%A4%E9%85%92/" data-id="cllmf780l000d28d55l6v55vi" data-title="第一次喝啤酒" class="article-share-link"><span class="fa fa-share">Compartir</span></a>
+      <a data-url="https://gty20010709.github.io/2023/09/27/Python%E4%B8%AD%E7%9A%84%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A%EF%BC%88byChatGPT%EF%BC%89/" data-id="cln1sjn6p0000ign16ogch4rm" data-title="Python中的延迟绑定" class="article-share-link"><span class="fa fa-share">Compartir</span></a>
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9D%82%E8%B0%88/" rel="tag">杂谈</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A/" rel="tag">延迟绑定</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%97%AD%E5%8C%85/" rel="tag">闭包</a></li></ul>
 
     </footer>
   </div>
@@ -115,19 +143,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2023/07/28/202307/Crossref-%E5%BC%80%E6%94%BE%E7%9A%84%E8%AE%BA%E6%96%87%E5%85%83%E6%95%B0%E6%8D%AE%E6%A3%80%E7%B4%A2API/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Nuevo</strong>
-      <div class="article-nav-title">
-        
-          Crossref:开放的论文元数据检索API
-        
-      </div>
-    </a>
   
-  
-    <a href="/2023/07/23/202307/%E5%A6%82%E4%BD%95%E5%9C%A8fish%E4%B8%AD%E4%BD%BF%E7%94%A8nvm%EF%BC%88%E8%8A%82%E8%AF%91%EF%BC%89/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2023/09/25/%E5%9C%A8Ubuntu%E4%B8%8A%E9%85%8D%E7%BD%AEZsh/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Viejo</strong>
-      <div class="article-nav-title">如何在fish中使用nvm（节译）</div>
+      <div class="article-nav-title">在Ubuntu上配置Zsh</div>
     </a>
   
 </nav>
