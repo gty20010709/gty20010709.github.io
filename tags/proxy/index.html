@@ -4,20 +4,15 @@
   <meta charset="utf-8">
   
   
-  <title>如何申请免费的SSL证书 | Theo&#39;s Blog</title>
+  <title>Tag: proxy | Theo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="〇、缘起最近置办了服务器和域名，本来计划着部署一个图片分类程序，但其中涉及到 OCR ，对性能要求很高，我的机子根本无法支撑，便放弃了。 虽然如此，但我还是利用了这两个资源来尝试申请 SSL 证书，以便我可以为网站加锁。 现在将要点记录在此，此是为缘起。 TL;DWTL;DR 是 Too Long; Don&#39;t Read 的缩写，此处化用。  免费证书由 Let&#39;s Encrypt">
-<meta property="og:type" content="article">
-<meta property="og:title" content="如何申请免费的SSL证书">
-<meta property="og:url" content="https://gty20010709.github.io/2023/07/23/202307/%E5%A6%82%E4%BD%95%E7%94%B3%E8%AF%B7%E5%85%8D%E8%B4%B9%E7%9A%84SSL%E8%AF%81%E4%B9%A6/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Theo&#39;s Blog">
+<meta property="og:url" content="https://gty20010709.github.io/tags/proxy/index.html">
 <meta property="og:site_name" content="Theo&#39;s Blog">
-<meta property="og:description" content="〇、缘起最近置办了服务器和域名，本来计划着部署一个图片分类程序，但其中涉及到 OCR ，对性能要求很高，我的机子根本无法支撑，便放弃了。 虽然如此，但我还是利用了这两个资源来尝试申请 SSL 证书，以便我可以为网站加锁。 现在将要点记录在此，此是为缘起。 TL;DWTL;DR 是 Too Long; Don&#39;t Read 的缩写，此处化用。  免费证书由 Let&#39;s Encrypt">
 <meta property="og:locale">
-<meta property="article:published_time" content="2023-07-23T06:46:57.000Z">
-<meta property="article:modified_time" content="2023-07-23T07:14:13.000Z">
 <meta property="article:author" content="Theo Cheng">
-<meta property="article:tag" content="https">
-<meta property="article:tag" content="ssl">
+<meta property="article:tag" content="Python, Chinese">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Theo's Blog" type="application/atom+xml">
@@ -77,79 +72,39 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-202307/如何申请免费的SSL证书" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/07/23/202307/%E5%A6%82%E4%BD%95%E7%94%B3%E8%AF%B7%E5%85%8D%E8%B4%B9%E7%9A%84SSL%E8%AF%81%E4%B9%A6/" class="article-date">
-  <time class="dt-published" datetime="2023-07-23T06:46:57.000Z" itemprop="datePublished">2023-07-23</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+        <section id="main">
   
-    <h1 class="p-name article-title" itemprop="headline name">
-      如何申请免费的SSL证书
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2023" class="archive-year">2023</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2023/11/05/%E8%87%AA%E5%BB%BAip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B9%8B%E8%AE%BE%E6%83%B3/" class="archive-article-date">
+  <time class="dt-published" datetime="2023-11-05T12:11:33.000Z" itemprop="datePublished">Nov 5</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2023/11/05/%E8%87%AA%E5%BB%BAip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B9%8B%E8%AE%BE%E6%83%B3/">自建ip代理池之设想</a>
     </h1>
   
 
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>最近置办了服务器和域名，本来计划着部署一个图片分类程序，但其中涉及到 OCR ，对性能要求很高，我的机子根本无法支撑，便放弃了。</p>
-<p>虽然如此，但我还是利用了这两个资源来尝试申请 SSL 证书，以便我可以为网站加锁。</p>
-<p>现在将要点记录在此，此是为缘起。</p>
-<h2 id="TL-DW"><a href="#TL-DW" class="headerlink" title="TL;DW"></a>TL;DW</h2><p><strong><code>TL;DR</code> 是 <code>Too Long; Don&#39;t Read</code> 的缩写，此处化用。</strong></p>
-<ol>
-<li><p>免费证书由 <code>Let&#39;s Encrypt</code> 提供；交互式教程参见： <a target="_blank" rel="noopener" href="https://certbot.eff.org/">https://certbot.eff.org/</a></p>
-</li>
-<li><p>凭证文件的例子</p>
-</li>
-</ol>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Cloudflare API token used by Certbot</span></span><br><span class="line"><span class="attr">dns_cloudflare_api_token</span> = <span class="number">0123456789</span>abcdef0123456789abcdef01234567</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>常用命令</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">certbot certonly --dns-cloudflare --dns-cloudflare-credentials ~/.private/cloudflare.ini --dns-cloudflare-propagation-seconds 30 -d xxx.expmple.com</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> ~/.private/cloudflare.ini 凭证文件</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">30 等待验证 DNS 记录的时间</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">xxx.expmple.com 为域名，可多个</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">参见： https://certbot-dns-cloudflare.readthedocs.io/en/stable/<span class="comment">#examples</span></span></span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/07/23/202307/%E5%A6%82%E4%BD%95%E7%94%B3%E8%AF%B7%E5%85%8D%E8%B4%B9%E7%9A%84SSL%E8%AF%81%E4%B9%A6/" data-id="clobeu0j0000y1kje3h7u92gz" data-title="如何申请免费的SSL证书" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/https/" rel="tag">https</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssl/" rel="tag">ssl</a></li></ul>
-
-    </footer>
+    </header>
   </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2023/07/23/202307/%E5%A6%82%E4%BD%95%E5%9C%A8fish%E4%B8%AD%E4%BD%BF%E7%94%A8nvm%EF%BC%88%E8%8A%82%E8%AF%91%EF%BC%89/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Neuer</strong>
-      <div class="article-nav-title">
-        
-          如何在fish中使用nvm（节译）
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2023/07/22/202307/%E5%A6%82%E4%BD%95%E5%9C%A8Vercel%E4%B8%AD%E4%BD%BF%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Älter</strong>
-      <div class="article-nav-title">如何在Vercel中使用自定义域名</div>
-    </a>
-  
-</nav>
-
-  
 </article>
+  
+  
+    </div></section>
+  
 
 
 </section>

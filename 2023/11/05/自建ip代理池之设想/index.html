@@ -4,20 +4,22 @@
   <meta charset="utf-8">
   
   
-  <title>如何申请免费的SSL证书 | Theo&#39;s Blog</title>
+  <title>自建ip代理池之设想 | Theo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="〇、缘起最近置办了服务器和域名，本来计划着部署一个图片分类程序，但其中涉及到 OCR ，对性能要求很高，我的机子根本无法支撑，便放弃了。 虽然如此，但我还是利用了这两个资源来尝试申请 SSL 证书，以便我可以为网站加锁。 现在将要点记录在此，此是为缘起。 TL;DWTL;DR 是 Too Long; Don&#39;t Read 的缩写，此处化用。  免费证书由 Let&#39;s Encrypt">
+  <meta name="description" content="〇、 缘起在使用爬虫进行自动化仼务时，一个好用的 IP 池往往可以简化整个流程并促进目标的达成。 我现在在用的商用 IP 池，比较贵（20r&#x2F;g流量）。因此，我想抽空研究一下自建免费 IP 池。 一、思路REF: What is Public Proxy Pool &amp; How to Build a Free Proxy Pool by Yourself? summarized b">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何申请免费的SSL证书">
-<meta property="og:url" content="https://gty20010709.github.io/2023/07/23/202307/%E5%A6%82%E4%BD%95%E7%94%B3%E8%AF%B7%E5%85%8D%E8%B4%B9%E7%9A%84SSL%E8%AF%81%E4%B9%A6/index.html">
+<meta property="og:title" content="自建ip代理池之设想">
+<meta property="og:url" content="https://gty20010709.github.io/2023/11/05/%E8%87%AA%E5%BB%BAip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B9%8B%E8%AE%BE%E6%83%B3/index.html">
 <meta property="og:site_name" content="Theo&#39;s Blog">
-<meta property="og:description" content="〇、缘起最近置办了服务器和域名，本来计划着部署一个图片分类程序，但其中涉及到 OCR ，对性能要求很高，我的机子根本无法支撑，便放弃了。 虽然如此，但我还是利用了这两个资源来尝试申请 SSL 证书，以便我可以为网站加锁。 现在将要点记录在此，此是为缘起。 TL;DWTL;DR 是 Too Long; Don&#39;t Read 的缩写，此处化用。  免费证书由 Let&#39;s Encrypt">
+<meta property="og:description" content="〇、 缘起在使用爬虫进行自动化仼务时，一个好用的 IP 池往往可以简化整个流程并促进目标的达成。 我现在在用的商用 IP 池，比较贵（20r&#x2F;g流量）。因此，我想抽空研究一下自建免费 IP 池。 一、思路REF: What is Public Proxy Pool &amp; How to Build a Free Proxy Pool by Yourself? summarized b">
 <meta property="og:locale">
-<meta property="article:published_time" content="2023-07-23T06:46:57.000Z">
-<meta property="article:modified_time" content="2023-07-23T07:14:13.000Z">
+<meta property="article:published_time" content="2023-11-05T12:11:33.000Z">
+<meta property="article:modified_time" content="2023-11-05T12:55:41.838Z">
 <meta property="article:author" content="Theo Cheng">
-<meta property="article:tag" content="https">
-<meta property="article:tag" content="ssl">
+<meta property="article:tag" content="ip">
+<meta property="article:tag" content="self-host">
+<meta property="article:tag" content="proxy">
+<meta property="article:tag" content="pool">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Theo's Blog" type="application/atom+xml">
@@ -77,10 +79,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-202307/如何申请免费的SSL证书" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-自建ip代理池之设想" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2023/07/23/202307/%E5%A6%82%E4%BD%95%E7%94%B3%E8%AF%B7%E5%85%8D%E8%B4%B9%E7%9A%84SSL%E8%AF%81%E4%B9%A6/" class="article-date">
-  <time class="dt-published" datetime="2023-07-23T06:46:57.000Z" itemprop="datePublished">2023-07-23</time>
+    <a href="/2023/11/05/%E8%87%AA%E5%BB%BAip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B9%8B%E8%AE%BE%E6%83%B3/" class="article-date">
+  <time class="dt-published" datetime="2023-11-05T12:11:33.000Z" itemprop="datePublished">2023-11-05</time>
 </a>
     
   </div>
@@ -91,7 +93,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      如何申请免费的SSL证书
+      自建ip代理池之设想
     </h1>
   
 
@@ -99,31 +101,47 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>最近置办了服务器和域名，本来计划着部署一个图片分类程序，但其中涉及到 OCR ，对性能要求很高，我的机子根本无法支撑，便放弃了。</p>
-<p>虽然如此，但我还是利用了这两个资源来尝试申请 SSL 证书，以便我可以为网站加锁。</p>
-<p>现在将要点记录在此，此是为缘起。</p>
-<h2 id="TL-DW"><a href="#TL-DW" class="headerlink" title="TL;DW"></a>TL;DW</h2><p><strong><code>TL;DR</code> 是 <code>Too Long; Don&#39;t Read</code> 的缩写，此处化用。</strong></p>
-<ol>
-<li><p>免费证书由 <code>Let&#39;s Encrypt</code> 提供；交互式教程参见： <a target="_blank" rel="noopener" href="https://certbot.eff.org/">https://certbot.eff.org/</a></p>
+        <h2 id="〇、-缘起"><a href="#〇、-缘起" class="headerlink" title="〇、 缘起"></a>〇、 缘起</h2><p>在使用爬虫进行自动化仼务时，一个好用的 IP 池往往可以简化整个流程并促进目标的达成。</p>
+<p>我现在在用的商用 IP 池，比较贵（20r&#x2F;g流量）。因此，我想抽空研究一下自建免费 IP 池。</p>
+<h2 id="一、思路"><a href="#一、思路" class="headerlink" title="一、思路"></a>一、思路</h2><p><strong>REF: <a target="_blank" rel="noopener" href="https://www.bestproxyreviews.com/free-proxy-pool/">What is Public Proxy Pool &amp; How to Build a Free Proxy Pool by Yourself?</a></strong></p>
+<p><strong>summarized by Windows Copilot</strong></p>
+<ul>
+<li><p><strong>寻找免费代理网站</strong>：你需要找到一些提供免费代理列表的网站，例如 Proxyrack, Free Proxy List, name, Free Proxy Lists 等。你要确保选择的代理是高度匿名的，不会泄露你的真实 IP 地址。你找到的网站越多，你的代理池就越大。</p>
 </li>
-<li><p>凭证文件的例子</p>
+<li><p><strong>编写网络爬虫</strong>：你需要用编程语言编写网络爬虫，从免费代理网站上抓取代理的 IP 和端口，然后测试它们是否可用，再将它们存入数据库中。</p>
 </li>
-</ol>
-<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Cloudflare API token used by Certbot</span></span><br><span class="line"><span class="attr">dns_cloudflare_api_token</span> = <span class="number">0123456789</span>abcdef0123456789abcdef01234567</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>常用命令</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">certbot certonly --dns-cloudflare --dns-cloudflare-credentials ~/.private/cloudflare.ini --dns-cloudflare-propagation-seconds 30 -d xxx.expmple.com</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> ~/.private/cloudflare.ini 凭证文件</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">30 等待验证 DNS 记录的时间</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">xxx.expmple.com 为域名，可多个</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">参见： https://certbot-dns-cloudflare.readthedocs.io/en/stable/<span class="comment">#examples</span></span></span><br></pre></td></tr></table></figure>
+<li><p><strong>定期检查代理</strong>：你需要创建一个定时函数，每隔一段时间就检查数据库中的代理是否仍然可用，你可以用一个 API 如 <a target="_blank" rel="noopener" href="http://httpbin.org/ip">http://httpbin.org/ip</a> 来测试代理的状态。对于不可用的代理，你需要从数据库中删除它们。这一步很重要，因为免费代理通常会在一段时间后失效，因为 IP 的所有者可能会停用或网站会封锁它们。</p>
+</li>
+<li><p><strong>创建代理 API</strong>：你需要创建一个代理 API 来从数据库中获取可用的代理，你可以让这个 API 返回随机的代理，或者支持 IP 旋转，这样可以避免系统一直返回同一个代理而导致被封锁。</p>
+</li>
+</ul>
+<h2 id="二、相关项目"><a href="#二、相关项目" class="headerlink" title="二、相关项目"></a>二、相关项目</h2><ul>
+<li><a href="IP-Proxy-Pool">https://github.com/fgksgf/IP-Proxy-Pool</a></li>
+</ul>
+<h2 id="三、候选-Public-Proxy-IP-网站"><a href="#三、候选-Public-Proxy-IP-网站" class="headerlink" title="三、候选 Public Proxy IP 网站"></a>三、候选 Public Proxy IP 网站</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://spys.one/">https://spys.one</a></li>
+<li><a target="_blank" rel="noopener" href="https://free-proxy-list.net/">https://free-proxy-list.net/</a></li>
+<li><a target="_blank" rel="noopener" href="https://hidemy.io/">https://hidemy.io</a></li>
+<li><a target="_blank" rel="noopener" href="https://list.proxylistplus.com/">https://list.proxylistplus.com</a></li>
+<li><a target="_blank" rel="noopener" href="http://free-proxy.cz/">http://free-proxy.cz</a></li>
+<li><a target="_blank" rel="noopener" href="https://sockslist.net/">https://sockslist.net/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.proxy-list.download/">https://www.proxy-list.download</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.proxyfish.com/proxylist">https://www.proxyfish.com/proxylist</a></li>
+<li><a target="_blank" rel="noopener" href="http://proxydb.net/">http://proxydb.net</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.socks-proxy.net/">https://www.socks-proxy.net</a></li>
+<li><a target="_blank" rel="noopener" href="https://geonode.com/">https://geonode.com/</a></li>
+</ul>
+<h2 id="待整理信息"><a href="#待整理信息" class="headerlink" title="待整理信息"></a>待整理信息</h2><p>暂时没有精力实现，实现起来应该是不难的；日后补充补充资料，再说再说…<br>现在只累得想睡觉。</p>
+<p><a target="_blank" rel="noopener" href="https://www.guru99.com/free-proxy-server-list.html">https://www.guru99.com/free-proxy-server-list.html</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/07/23/202307/%E5%A6%82%E4%BD%95%E7%94%B3%E8%AF%B7%E5%85%8D%E8%B4%B9%E7%9A%84SSL%E8%AF%81%E4%B9%A6/" data-id="clobeu0j0000y1kje3h7u92gz" data-title="如何申请免费的SSL证书" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/11/05/%E8%87%AA%E5%BB%BAip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B9%8B%E8%AE%BE%E6%83%B3/" data-id="clolh8pne000070je2qmfe8vs" data-title="自建ip代理池之设想" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/https/" rel="tag">https</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssl/" rel="tag">ssl</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ip/" rel="tag">ip</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pool/" rel="tag">pool</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/proxy/" rel="tag">proxy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/self-host/" rel="tag">self-host</a></li></ul>
 
     </footer>
   </div>
@@ -131,19 +149,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2023/07/23/202307/%E5%A6%82%E4%BD%95%E5%9C%A8fish%E4%B8%AD%E4%BD%BF%E7%94%A8nvm%EF%BC%88%E8%8A%82%E8%AF%91%EF%BC%89/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Neuer</strong>
-      <div class="article-nav-title">
-        
-          如何在fish中使用nvm（节译）
-        
-      </div>
-    </a>
   
-  
-    <a href="/2023/07/22/202307/%E5%A6%82%E4%BD%95%E5%9C%A8Vercel%E4%B8%AD%E4%BD%BF%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2023/11/04/%E8%87%AA%E5%BB%BA%E9%82%AE%E7%AE%B1%E6%9C%8D%E5%8A%A1%E4%B9%8B%E8%AE%B0%E5%BD%95/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Älter</strong>
-      <div class="article-nav-title">如何在Vercel中使用自定义域名</div>
+      <div class="article-nav-title">自建邮箱服务之记录</div>
     </a>
   
 </nav>
