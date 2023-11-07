@@ -4,15 +4,21 @@
   <meta charset="utf-8">
   
   
-  <title>Tag: powsershell | Theo&#39;s Blog</title>
+  <title>Python中的彩色打印 | Theo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Theo&#39;s Blog">
-<meta property="og:url" content="https://gty20010709.github.io/tags/powsershell/index.html">
+  <meta name="description" content="〇、缘起大概在两个月前，我在准备教师资格证考试，白天去图书馆学习，晚上就回宿舍。 在宿舍，我有时会把时间花在刀塔上（经过200h+的苦练，现在是一个为人称赞的 Hard Support😂）；有时会写写代码，当时也在学 Golang， 我就用 Go 给自己写了一个仓颉反查的命令行小程序，当时为了将输入的汉字与对应的编码明显地区分开，我使用了彩色打印，用了 github.com&#x2F;gooki">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python中的彩色打印">
+<meta property="og:url" content="https://gty20010709.github.io/2023/11/07/Python%E4%B8%AD%E7%9A%84%E5%BD%A9%E8%89%B2%E6%89%93%E5%8D%B0/index.html">
 <meta property="og:site_name" content="Theo&#39;s Blog">
+<meta property="og:description" content="〇、缘起大概在两个月前，我在准备教师资格证考试，白天去图书馆学习，晚上就回宿舍。 在宿舍，我有时会把时间花在刀塔上（经过200h+的苦练，现在是一个为人称赞的 Hard Support😂）；有时会写写代码，当时也在学 Golang， 我就用 Go 给自己写了一个仓颉反查的命令行小程序，当时为了将输入的汉字与对应的编码明显地区分开，我使用了彩色打印，用了 github.com&#x2F;gooki">
 <meta property="og:locale">
+<meta property="article:published_time" content="2023-11-07T07:11:19.000Z">
+<meta property="article:modified_time" content="2023-11-07T08:14:01.254Z">
 <meta property="article:author" content="Theo Cheng">
-<meta property="article:tag" content="Python, Chinese">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="color">
+<meta property="article:tag" content="print">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Theo's Blog" type="application/atom+xml">
@@ -72,39 +78,61 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2023" class="archive-year">2023</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2023/10/29/202310/PowerShell%E5%8A%9F%E8%83%BD%E8%A1%A5%E5%85%A8%E6%8C%87%E5%8D%97/" class="archive-article-date">
-  <time class="dt-published" datetime="2023-10-29T11:28:23.000Z" itemprop="datePublished">Oct 29</time>
+        <section id="main"><article id="post-Python中的彩色打印" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/11/07/Python%E4%B8%AD%E7%9A%84%E5%BD%A9%E8%89%B2%E6%89%93%E5%8D%B0/" class="article-date">
+  <time class="dt-published" datetime="2023-11-07T07:11:19.000Z" itemprop="datePublished">2023-11-07</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/10/29/202310/PowerShell%E5%8A%9F%E8%83%BD%E8%A1%A5%E5%85%A8%E6%8C%87%E5%8D%97/">PowerShell功能补全指南</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      Python中的彩色打印
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>大概在两个月前，我在准备教师资格证考试，白天去图书馆学习，晚上就回宿舍。</p>
+<p>在宿舍，我有时会把时间花在刀塔上（经过200h+的苦练，现在是一个为人称赞的 Hard Support😂）；有时会写写代码，当时也在学 Golang， 我就用 Go 给自己写了一个仓颉反查的命令行小程序，当时为了将输入的汉字与对应的编码明显地区分开，我使用了彩色打印，用了 github.com&#x2F;gookit&#x2F;color。</p>
+<p>最近我因为找工作和毕业论文，感到很焦虑，看不下书，学不进习，就上网刷刷视频，看到了一位 Youtuber 介绍了<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=AMoBy45dYpY">几个 Python 的小技巧</a>，我对其中彩色打印比较感兴趣，正好也想起了前段时间用 Go 写程序时接触过彩色打印。</p>
+<p>我比较担心看过就忘记了，因此，写文章来记录一下，此是为缘起。</p>
+<h2 id="一、-colorama"><a href="#一、-colorama" class="headerlink" title="一、 colorama"></a>一、 colorama</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://pypi.org/project/colorama/">https://pypi.org/project/colorama/</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gty20010709.github.io/2023/11/07/Python%E4%B8%AD%E7%9A%84%E5%BD%A9%E8%89%B2%E6%89%93%E5%8D%B0/" data-id="cloo16fdm0000h4je4flv86uc" data-title="Python中的彩色打印" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/color/" rel="tag">color</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/print/" rel="tag">print</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2023/11/05/%E8%87%AA%E5%BB%BAip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B9%8B%E8%AE%BE%E6%83%B3/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Älter</strong>
+      <div class="article-nav-title">自建ip代理池之设想</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 
 </section>
