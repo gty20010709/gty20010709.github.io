@@ -74,6 +74,55 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-202310/dpkg强制覆盖安装" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/10/01/202310/dpkg%E5%BC%BA%E5%88%B6%E8%A6%86%E7%9B%96%E5%AE%89%E8%A3%85/" class="article-date">
+  <time class="dt-published" datetime="2023-10-01T07:07:48.000Z" itemprop="datePublished">2023-10-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/10/01/202310/dpkg%E5%BC%BA%E5%88%B6%E8%A6%86%E7%9B%96%E5%AE%89%E8%A3%85/">dpkg强制覆盖安装</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>当我尝试把我的 Kubuntu 从 22.04.04 升级到 23.04 时，我遇到一个错误，导致安装无法进行，咨询 ChatGPT 后，得到解决。因此记录。</p>
+<h2 id="一、问题"><a href="#一、问题" class="headerlink" title="一、问题"></a>一、问题</h2><p>安装 kubuntu-settings-desktop 包时发生了一个问题。解压缩过程中出现了冲突，因为要覆盖的文件 &#x2F;usr&#x2F;share&#x2F;wallpapers&#x2F;Next&#x2F;contents&#x2F;images&#x2F;2560x1600.jpg 同时也被 breeze 软件包包含。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">您希望继续执行吗？ [Y/n] y</span><br><span class="line">(正在读取数据库 ... 系统当前共安装有 285935 个文件和目录。)</span><br><span class="line">准备解压 .../kubuntu-settings-desktop_1%3a23.04.5_all.deb ...</span><br><span class="line">正在解压 kubuntu-settings-desktop (1:23.04.5) 并覆盖 (1:22.04.10) ...</span><br><span class="line">dpkg: 处理归档 /var/cache/apt/archives/kubuntu-settings-desktop_1%3a23.04.5_all.deb (--unpack)时出错：</span><br><span class="line">正试图覆盖 /usr/share/wallpapers/Next/contents/images/2560x1600.jpg，它同时被包含于软件包 breeze 4:5.24.7-0ubuntu0.1</span><br><span class="line">dpkg-deb: 错误: 粘贴 子进程被信号(断开的管道) 终止了</span><br><span class="line">在处理时有错误发生：</span><br><span class="line"><span class="meta prompt_">/var/cache/apt/archives/kubuntu-settings-desktop_1%</span><span class="language-bash">3a23.04.5_all.deb</span></span><br><span class="line">E: Sub-process /usr/bin/dpkg returned an error code (1)</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、解决"><a href="#二、解决" class="headerlink" title="二、解决"></a>二、解决</h2><p>第一个命令将强制覆盖文件，第二个命令将尝试修复由于安装中断导致的依赖关系问题。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo dpkg --force-overwrite -i /var/cache/apt/archives/kubuntu-settings-desktop_1%3a23.04.5_all.deb</span><br><span class="line">sudo apt install -f</span><br></pre></td></tr></table></figure>
+
+
+<p><a target="_blank" rel="noopener" href="https://www.zaiwen.top/#/chat/share/819a7da0-602a-11ee-a123-00163c8ef615">咨询ChatGPT之记录</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gty20010709.github.io/2023/10/01/202310/dpkg%E5%BC%BA%E5%88%B6%E8%A6%86%E7%9B%96%E5%AE%89%E8%A3%85/" data-id="clok81ng30007z4je4d1t6e2n" data-title="dpkg强制覆盖安装" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dpkg/" rel="tag">dpkg</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/error/" rel="tag">error</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-202309/Python中的延迟绑定（byChatGPT）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2023/09/27/202309/Python%E4%B8%AD%E7%9A%84%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A%EF%BC%88byChatGPT%EF%BC%89/" class="article-date">
@@ -475,49 +524,6 @@
 
 
   
-    <article id="post-202308/git新建孤儿分支并推送到远端" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/08/03/202308/git%E6%96%B0%E5%BB%BA%E5%AD%A4%E5%84%BF%E5%88%86%E6%94%AF%E5%B9%B6%E6%8E%A8%E9%80%81%E5%88%B0%E8%BF%9C%E7%AB%AF/" class="article-date">
-  <time class="dt-published" datetime="2023-08-03T15:13:34.000Z" itemprop="datePublished">2023-08-03</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/08/03/202308/git%E6%96%B0%E5%BB%BA%E5%AD%A4%E5%84%BF%E5%88%86%E6%94%AF%E5%B9%B6%E6%8E%A8%E9%80%81%E5%88%B0%E8%BF%9C%E7%AB%AF/">git新建孤儿分支并推送到远端</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>在 GitHub 与人合作，不止一次需要新建分支。为了避免旧文件的干扰又不增加冗余文件，必须得新建一个干净的孤儿分支，然后将孤儿分支中的旧文件删除。</p>
-<p>这一套流程，我走了又三四遍了，还是没有记住，每次都要去问 ChatGPT，而 ChatGPT 并不总是可靠的。现在就将之记录下来，以备下次查阅。</p>
-<p>此是为缘起。</p>
-<h2 id="一、-详细"><a href="#一、-详细" class="headerlink" title="一、 详细"></a>一、 详细</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">git checkout --orphan new_branch</span><br><span class="line">git rm -rf *</span><br><span class="line"></span><br><span class="line"># do something with the files</span><br><span class="line">git add .</span><br><span class="line">git commit -m &quot;add files&quot;</span><br><span class="line"></span><br><span class="line">git push origin new_branch</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/08/03/202308/git%E6%96%B0%E5%BB%BA%E5%AD%A4%E5%84%BF%E5%88%86%E6%94%AF%E5%B9%B6%E6%8E%A8%E9%80%81%E5%88%B0%E8%BF%9C%E7%AB%AF/" data-id="clobeu0il000b1kje82rif9w3" data-title="git新建孤儿分支并推送到远端" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/" rel="tag">git</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
     <article id="post-202307/Barrier：使用一套键鼠控制多台电脑" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2023/07/30/202307/Barrier%EF%BC%9A%E4%BD%BF%E7%94%A8%E4%B8%80%E5%A5%97%E9%94%AE%E9%BC%A0%E6%8E%A7%E5%88%B6%E5%A4%9A%E5%8F%B0%E7%94%B5%E8%84%91/" class="article-date">
@@ -630,6 +636,10 @@
       <ul>
         
           <li>
+            <a href="/2023/11/09/%E6%88%91%E7%9A%84git%E7%AC%94%E8%AE%B0/">我的git笔记</a>
+          </li>
+        
+          <li>
             <a href="/2023/11/07/Python%E4%B8%AD%E7%9A%84%E5%BD%A9%E8%89%B2%E6%89%93%E5%8D%B0/">Python中的彩色打印</a>
           </li>
         
@@ -643,10 +653,6 @@
         
           <li>
             <a href="/2023/10/31/202310/scoop%E6%89%80%E9%81%87%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">scoop所遇问题记录</a>
-          </li>
-        
-          <li>
-            <a href="/2023/10/29/202310/PowerShell%E5%8A%9F%E8%83%BD%E8%A1%A5%E5%85%A8%E6%8C%87%E5%8D%97/">PowerShell功能补全指南</a>
           </li>
         
       </ul>
