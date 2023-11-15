@@ -4,21 +4,19 @@
   <meta charset="utf-8">
   
   
-  <title>PowerShell功能补全指南 | Theo&#39;s Blog</title>
+  <title>ssh笔记 | Theo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="〇、缘起因为一些外部原因，我又用回了 Windows， 我决定行动起来，改变我在使用 PowerShell 时遇到的痛点。 一、痛点及解诀方案 根据我使用中所遇的持续更新… 需scoop包管理器（Scoop官网）     痛点 解诀方案    touch 新建文件 scoop install psutils   sudo 使用管理员权限丸行命令 scoop install psutils   le">
+  <meta name="description" content="建立远程通道  ssh -fN -L local_port:remote_host:remote_port user@ssh_server  使用 key 文件 登录远程 vps  ssh -i &#x2F;path&#x2F;to&#x2F;key_file.key user@vps_ip">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PowerShell功能补全指南">
-<meta property="og:url" content="https://gty20010709.github.io/2023/10/29/202310/PowerShell%E5%8A%9F%E8%83%BD%E8%A1%A5%E5%85%A8%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:title" content="ssh笔记">
+<meta property="og:url" content="https://gty20010709.github.io/2023/11/15/ssh%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="Theo&#39;s Blog">
-<meta property="og:description" content="〇、缘起因为一些外部原因，我又用回了 Windows， 我决定行动起来，改变我在使用 PowerShell 时遇到的痛点。 一、痛点及解诀方案 根据我使用中所遇的持续更新… 需scoop包管理器（Scoop官网）     痛点 解诀方案    touch 新建文件 scoop install psutils   sudo 使用管理员权限丸行命令 scoop install psutils   le">
+<meta property="og:description" content="建立远程通道  ssh -fN -L local_port:remote_host:remote_port user@ssh_server  使用 key 文件 登录远程 vps  ssh -i &#x2F;path&#x2F;to&#x2F;key_file.key user@vps_ip">
 <meta property="og:locale">
-<meta property="article:published_time" content="2023-10-29T11:28:23.000Z">
-<meta property="article:modified_time" content="2023-11-07T07:48:03.000Z">
+<meta property="article:published_time" content="2023-11-15T12:36:12.000Z">
+<meta property="article:modified_time" content="2023-11-15T12:39:25.264Z">
 <meta property="article:author" content="Theo Cheng">
-<meta property="article:tag" content="powsershell">
-<meta property="article:tag" content="oh-my-posh">
-<meta property="article:tag" content="psreadline">
+<meta property="article:tag" content="ssh">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Theo's Blog" type="application/atom+xml">
@@ -78,10 +76,10 @@
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-202310/PowerShell功能补全指南" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-ssh笔记" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2023/10/29/202310/PowerShell%E5%8A%9F%E8%83%BD%E8%A1%A5%E5%85%A8%E6%8C%87%E5%8D%97/" class="article-date">
-  <time class="dt-published" datetime="2023-10-29T11:28:23.000Z" itemprop="datePublished">2023-10-29</time>
+    <a href="/2023/11/15/ssh%E7%AC%94%E8%AE%B0/" class="article-date">
+  <time class="dt-published" datetime="2023-11-15T12:36:12.000Z" itemprop="datePublished">2023-11-15</time>
 </a>
     
   </div>
@@ -92,7 +90,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      PowerShell功能补全指南
+      ssh笔记
     </h1>
   
 
@@ -100,60 +98,23 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>因为一些外部原因，我又用回了 Windows， 我决定行动起来，改变我在使用 PowerShell 时遇到的痛点。</p>
-<h2 id="一、痛点及解诀方案"><a href="#一、痛点及解诀方案" class="headerlink" title="一、痛点及解诀方案"></a>一、痛点及解诀方案</h2><ul>
-<li>根据我使用中所遇的持续更新…</li>
-<li>需<code>scoop</code>包管理器（<a target="_blank" rel="noopener" href="https://scoop.sh/">Scoop官网</a>）</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>痛点</th>
-<th>解诀方案</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>touch 新建文件</td>
-<td><code>scoop install psutils</code></td>
-</tr>
-<tr>
-<td>sudo 使用管理员权限丸行命令</td>
-<td><code>scoop install psutils</code></td>
-</tr>
-<tr>
-<td>less 在命令行中快速查看文本文件</td>
-<td><code>scoop install less</code></td>
-</tr>
-<tr>
-<td>Fish 那样的命令提示</td>
-<td>PowerShell Module: <code>PSReadline</code></td>
-</tr>
-<tr>
-<td>快速在 Ternimal 中配置 alias、环境变量等</td>
-<td>编缉<code>$profile</code></td>
-</tr>
-<tr>
-<td>多功能提示符(prompt)</td>
-<td>安装<a target="_blank" rel="noopener" href="https://ohmyposh.dev/">oh my posh</a></td>
-</tr>
-<tr>
-<td><code>mkdir</code>建立多个文件来</td>
-<td><code>mkdir folder1,folder2,folder3</code></td>
-</tr>
-<tr>
-<td>which $cmd</td>
-<td>Get-Command $cmd</td>
-</tr>
-</tbody></table>
+        <ol>
+<li>建立远程通道</li>
+</ol>
+<p><code>ssh -fN -L local_port:remote_host:remote_port user@ssh_server</code></p>
+<ol start="2">
+<li>使用 key 文件 登录远程 vps</li>
+</ol>
+<p><code>ssh -i /path/to/key_file.key user@vps_ip</code></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/10/29/202310/PowerShell%E5%8A%9F%E8%83%BD%E8%A1%A5%E5%85%A8%E6%8C%87%E5%8D%97/" data-id="clok81nfr0001z4je7d1888ea" data-title="PowerShell功能补全指南" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/11/15/ssh%E7%AC%94%E8%AE%B0/" data-id="clozr1v840000ggjecvu1crr8" data-title="ssh笔记" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oh-my-posh/" rel="tag">oh-my-posh</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/powsershell/" rel="tag">powsershell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/psreadline/" rel="tag">psreadline</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ssh/" rel="tag">ssh</a></li></ul>
 
     </footer>
   </div>
@@ -161,19 +122,10 @@
     
 <nav id="article-nav">
   
-    <a href="/2023/10/31/202310/scoop%E6%89%80%E9%81%87%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Neuer</strong>
-      <div class="article-nav-title">
-        
-          scoop所遇问题记录
-        
-      </div>
-    </a>
   
-  
-    <a href="/2023/10/09/202310/%E5%9C%A8Ubuntu23-04%E4%B8%8A%E4%B8%80%E6%9D%A1%E5%91%BD%E4%BB%A4%E5%AE%89%E8%A3%85LaTeX%E7%8E%AF%E5%A2%83/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2023/11/15/%E7%94%A8Python%E4%BB%8E%E5%9B%BE%E7%89%87%E5%88%9B%E5%BB%BAASCII-Art/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Älter</strong>
-      <div class="article-nav-title">在Ubuntu23.04上一条命令安装LaTeX环境</div>
+      <div class="article-nav-title">用Python从图片创建ASCII-Art</div>
     </a>
   
 </nav>
