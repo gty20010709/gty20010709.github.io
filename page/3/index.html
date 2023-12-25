@@ -74,6 +74,125 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-202309/Python中的延迟绑定（byChatGPT）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/09/27/202309/Python%E4%B8%AD%E7%9A%84%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A%EF%BC%88byChatGPT%EF%BC%89/" class="article-date">
+  <time class="dt-published" datetime="2023-09-27T13:21:39.000Z" itemprop="datePublished">2023-09-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/09/27/202309/Python%E4%B8%AD%E7%9A%84%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A%EF%BC%88byChatGPT%EF%BC%89/">Python中的延迟绑定</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="1、PS"><a href="#1、PS" class="headerlink" title="-1、PS"></a>-1、PS</h2><p>此文由 ChatGPT 生成， 经人工审定。</p>
+<h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>今天在牛客刷题，遇到了延迟绑定的问题。之前看书（《Python之美》or《流畅的Python》）时，其实看到过，但一时没想起来。因此，在ChatGPT的辅助下，完成了这篇文章。</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 牛客题目</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">fn</span>():</span><br><span class="line">    t = []</span><br><span class="line">    i = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> i &lt; <span class="number">2</span>:</span><br><span class="line">        t.append(<span class="keyword">lambda</span> x: <span class="built_in">print</span>(i*x, end=<span class="string">&quot;,&quot;</span>))</span><br><span class="line">        i += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> t</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> fn()</span><br><span class="line">    f(<span class="number">2</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="一、Python中的延迟绑定"><a href="#一、Python中的延迟绑定" class="headerlink" title="一、Python中的延迟绑定"></a>一、Python中的延迟绑定</h2><p>Python中的延迟绑定（Late Binding）是一个概念，通常与闭包（Closures）和匿名函数（Lambda Functions）有关。它指的是在函数内部访问非局部变量（外部函数的变量）时，不会立即绑定到该变量的值，而是在函数被调用时才绑定。这可以导致一些令人惊讶的行为，特别是在循环中创建闭包时。</p>
+<p>下面详细解释延迟绑定的概念：</p>
+<ol>
+<li><p><strong>闭包与局部作用域</strong>：在Python中，函数可以嵌套在其他函数内部。当一个内部函数引用了外部函数的变量时，就会创建一个闭包。闭包是一个函数对象，它不仅包含了代码，还包含了创建它的环境（也就是外部函数的变量）。</p>
+</li>
+<li><p><strong>延迟绑定的例子</strong>：在一个闭包中，如果内部函数尝试修改外部函数的变量，Python会将该变量视为自由变量（Free Variable）。这个自由变量在函数定义时并没有被绑定到特定的值，而是在函数被调用时动态绑定。这就是延迟绑定的概念。</p>
+</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">outer</span>():</span><br><span class="line">    x = <span class="number">10</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">inner</span>():</span><br><span class="line">        <span class="built_in">print</span>(x)</span><br><span class="line">    <span class="keyword">return</span> inner</span><br><span class="line"></span><br><span class="line">closure = outer()</span><br><span class="line">closure()  <span class="comment"># 输出：10</span></span><br></pre></td></tr></table></figure>
+
+<p>在上面的例子中，<code>inner</code> 函数引用了外部函数 <code>outer</code> 中的变量 <code>x</code>。这个变量在 <code>inner</code> 函数定义时没有被绑定到具体的值，只有在调用 <code>closure</code> 时才绑定到 <code>10</code>。</p>
+<ol start="3">
+<li><strong>循环中的延迟绑定</strong>：延迟绑定在循环中容易引发问题，因为循环变量经常被用于创建闭包。在循环中创建闭包时，闭包内部引用的是循环变量的最终值，而不是循环中每次迭代的值。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">create_multipliers</span>():</span><br><span class="line">    multipliers = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">        multipliers.append(<span class="keyword">lambda</span> x: x * i)</span><br><span class="line">    <span class="keyword">return</span> multipliers</span><br><span class="line"></span><br><span class="line">multipliers = create_multipliers()</span><br><span class="line"><span class="built_in">print</span>([multiplier(<span class="number">2</span>) <span class="keyword">for</span> multiplier <span class="keyword">in</span> multipliers])</span><br><span class="line"><span class="comment"># 输出：[8, 8, 8, 8, 8]</span></span><br></pre></td></tr></table></figure>
+
+<p>在上面的例子中，<code>multipliers</code> 列表包含了五个闭包，每个闭包都应该将传入的参数与不同的 <code>i</code> 相乘。但实际上，它们都引用了最终的 <code>i</code> 值，即 <code>4</code>，所以在调用时，它们都返回了 <code>8</code>。</p>
+<p>为了避免循环中的延迟绑定问题，可以通过在闭包内部传递循环变量的值来解决，例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">create_multipliers_fixed</span>():</span><br><span class="line">    multipliers = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">        multipliers.append(<span class="keyword">lambda</span> x, i=i: x * i)</span><br><span class="line">    <span class="keyword">return</span> multipliers</span><br><span class="line"></span><br><span class="line">multipliers_fixed = create_multipliers_fixed()</span><br><span class="line"><span class="built_in">print</span>([multiplier(<span class="number">2</span>) <span class="keyword">for</span> multiplier <span class="keyword">in</span> multipliers_fixed])</span><br><span class="line"><span class="comment"># 输出：[0, 2, 4, 6, 8]</span></span><br></pre></td></tr></table></figure>
+
+<p>在这个修复后的版本中，我们通过在闭包内部传递 <code>i=i</code> 来绑定循环变量的值，确保每个闭包引用的是不同的 <code>i</code> 值，从而得到正确的结果。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gty20010709.github.io/2023/09/27/202309/Python%E4%B8%AD%E7%9A%84%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A%EF%BC%88byChatGPT%EF%BC%89/" data-id="clobeu0j400151kje3tzh2xfg" data-title="Python中的延迟绑定" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A/" rel="tag">延迟绑定</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%97%AD%E5%8C%85/" rel="tag">闭包</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-202309/在Ubuntu上配置Zsh" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/09/25/202309/%E5%9C%A8Ubuntu%E4%B8%8A%E9%85%8D%E7%BD%AEZsh/" class="article-date">
+  <time class="dt-published" datetime="2023-09-25T13:16:16.000Z" itemprop="datePublished">2023-09-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/09/25/202309/%E5%9C%A8Ubuntu%E4%B8%8A%E9%85%8D%E7%BD%AEZsh/">在Ubuntu上配置Zsh</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="参见："><a href="#参见：" class="headerlink" title="参见："></a>参见：</h1><p><a target="_blank" rel="noopener" href="https://www.kwchang0831.dev/dev-env/ubuntu/oh-my-zsh">Ubuntu 安裝 Zsh + Oh My Zsh + Powerlevel10k 與各種插件</a></p>
+<h2 id="命令提取版"><a href="#命令提取版" class="headerlink" title="命令提取版"></a>命令提取版</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">工具</span></span><br><span class="line">sudo apt install wget git curl vim -y</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">字体</span></span><br><span class="line">wget https://github.com/romkatv/dotfiles-public/raw/master/.local/share/fonts/NerdFonts/MesloLGS%20NF%20Regular.ttf &amp;&amp;</span><br><span class="line">wget https://github.com/romkatv/dotfiles-public/raw/master/.local/share/fonts/NerdFonts/MesloLGS%20NF%20Bold.ttf &amp;&amp;</span><br><span class="line">wget https://github.com/romkatv/dotfiles-public/raw/master/.local/share/fonts/NerdFonts/MesloLGS%20NF%20Italic.ttf &amp;&amp;</span><br><span class="line">wget https://github.com/romkatv/dotfiles-public/raw/master/.local/share/fonts/NerdFonts/MesloLGS%20NF%20Bold%20Italic.ttf</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装</span></span><br><span class="line">sudo apt install zsh -y</span><br><span class="line">sh -c &quot;$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">更改shell</span></span><br><span class="line">chsh -s $(which zsh)</span><br><span class="line">zsh</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">插件</span></span><br><span class="line">git clone https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k</span><br><span class="line"></span><br><span class="line">git clone https://github.com/zsh-users/zsh-autosuggestions $&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;/plugins/zsh-autosuggestions</span><br><span class="line"></span><br><span class="line">git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $&#123;ZSH_CUSTOM:-~/.oh-my-zsh/custom&#125;/plugins/zsh-syntax-highlighting</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">git clone https://github.com/agkozak/zsh-z $ZSH_CUSTOM/plugins/zsh-z</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>编辑 <code>~/.zshrc</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ZSH_THEME=&quot;powerlevel10k/powerlevel10k&quot;</span><br><span class="line">plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-z)</span><br></pre></td></tr></table></figure>
+
+<p>加载配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+<p>重载 <code>powerlevel10k</code> </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p10k configure</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gty20010709.github.io/2023/09/25/202309/%E5%9C%A8Ubuntu%E4%B8%8A%E9%85%8D%E7%BD%AEZsh/" data-id="clobeu0j200121kje9xk9f205" data-title="在Ubuntu上配置Zsh" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ubuntu/" rel="tag">ubuntu</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/zsh/" rel="tag">zsh</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-202309/键盘监控程序的设想" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2023/09/02/202309/%E9%94%AE%E7%9B%98%E7%9B%91%E6%8E%A7%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%AE%BE%E6%83%B3/" class="article-date">
@@ -463,106 +582,6 @@
 
 
   
-    <article id="post-202307/第一次喝啤酒" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/07/23/202307/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%96%9D%E5%95%A4%E9%85%92/" class="article-date">
-  <time class="dt-published" datetime="2023-07-23T15:21:02.000Z" itemprop="datePublished">2023-07-23</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/07/23/202307/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%96%9D%E5%95%A4%E9%85%92/">第一次喝啤酒</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>第一口进入嘴里，舌头都麻了。咽下去后，喉头有种淡淡的苦味。之后的每一口，舌头都有麻麻的感觉。一罐从中午喝到下午，没有喝醉，没有感受到酒的味道。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/07/23/202307/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%96%9D%E5%95%A4%E9%85%92/" data-id="clobeu0iz000u1kje8kvt0uar" data-title="第一次喝啤酒" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9D%82%E8%B0%88/" rel="tag">杂谈</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-202307/如何在fish中使用nvm（节译）" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/07/23/202307/%E5%A6%82%E4%BD%95%E5%9C%A8fish%E4%B8%AD%E4%BD%BF%E7%94%A8nvm%EF%BC%88%E8%8A%82%E8%AF%91%EF%BC%89/" class="article-date">
-  <time class="dt-published" datetime="2023-07-23T07:15:25.000Z" itemprop="datePublished">2023-07-23</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/07/23/202307/%E5%A6%82%E4%BD%95%E5%9C%A8fish%E4%B8%AD%E4%BD%BF%E7%94%A8nvm%EF%BC%88%E8%8A%82%E8%AF%91%EF%BC%89/">如何在fish中使用nvm（节译）</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <hr>
-<ul>
-<li>原作者：Przemysław Kołodziejczyk</li>
-<li>原文地址： source: <a target="_blank" rel="noopener" href="https://eshlox.net/2019/01/27/how-to-use-nvm-with-fish-shell/">https://eshlox.net/2019/01/27/how-to-use-nvm-with-fish-shell/</a></li>
-<li>译者：关田一</li>
-</ul>
-<hr>
-<p><a target="_blank" rel="noopener" href="https://github.com/creationix/nvm">NVM</a> 并不支持 <a target="_blank" rel="noopener" href="https://github.com/fish-shell/fish-shell">fish</a> shell。</p>
-<p>幸运的是, 这很容易解决. 我们可以安装 <a target="_blank" rel="noopener" href="https://github.com/edc/bass">bass</a> 插件去使用那些为 Bash 所写的工具。</p>
-<p>可以使用 <a target="_blank" rel="noopener" href="https://github.com/jorgebucaran/fisher">fisher</a> 去安装 <a target="_blank" rel="noopener" href="https://github.com/edc/bass">bass</a> (你也可以使用 <a target="_blank" rel="noopener" href="https://github.com/oh-my-fish/oh-my-fish">oh-my-fish</a>)。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fisher add edc/bass</span><br></pre></td></tr></table></figure>
-
-<p>安装 <a target="_blank" rel="noopener" href="https://github.com/creationix/nvm">nvm</a> (请检查最新的版本).</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash</span><br><span class="line"></span><br><span class="line"># 原文写于 2019 年，现在译者处在 2023 年，原文中较旧的链接便自行更新。</span><br></pre></td></tr></table></figure>
-
-<p>添加 fish function 到 <code>~/.config/fish/functions/nvm.fish</code> 以加载 nvm:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function nvm</span><br><span class="line">    bass source ~/.nvm/nvm.sh --no-use &#x27;;&#x27; nvm $argv</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-<p>现在已经可以使用了。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/07/23/202307/%E5%A6%82%E4%BD%95%E5%9C%A8fish%E4%B8%AD%E4%BD%BF%E7%94%A8nvm%EF%BC%88%E8%8A%82%E8%AF%91%EF%BC%89/" data-id="clobeu0ix000r1kje4xera681" data-title="如何在fish中使用nvm（节译）" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/fish/" rel="tag">fish</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/fish-shell/" rel="tag">fish-shell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nvm/" rel="tag">nvm</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
@@ -588,7 +607,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/" rel="tag">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ascii-art/" rel="tag">ascii art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/asyncache/" rel="tag">asyncache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/barrier/" rel="tag">barrier</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cachetools/" rel="tag">cachetools</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chinese/" rel="tag">chinese</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/color/" rel="tag">color</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/coming/" rel="tag">coming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/command-line/" rel="tag">command line</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crack/" rel="tag">crack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crossref/" rel="tag">crossref</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dist/" rel="tag">dist</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dpkg/" rel="tag">dpkg</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/error/" rel="tag">error</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/example/" rel="tag">example</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fastapi/" rel="tag">fastapi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewall/" rel="tag">firewall</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish/" rel="tag">fish</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish-shell/" rel="tag">fish-shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flask/" rel="tag">flask</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fun/" rel="tag">fun</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/" rel="tag">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/" rel="tag">https</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/image/" rel="tag">image</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ip/" rel="tag">ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jinja2/" rel="tag">jinja2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kdeconnect/" rel="tag">kdeconnect</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/keyboard/" rel="tag">keyboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/language/" rel="tag">language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maddy/" rel="tag">maddy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mail/" rel="tag">mail</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/man/" rel="tag">man</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/manjaro/" rel="tag">manjaro</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/monitor/" rel="tag">monitor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nvm/" rel="tag">nvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oh-my-posh/" rel="tag">oh-my-posh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pool/" rel="tag">pool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/powsershell/" rel="tag">powsershell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/print/" rel="tag">print</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/proxy/" rel="tag">proxy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/psreadline/" rel="tag">psreadline</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/retry/" rel="tag">retry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scholar/" rel="tag">scholar</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scoop/" rel="tag">scoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/self-host/" rel="tag">self-host</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/settings/" rel="tag">settings</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/socket/" rel="tag">socket</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/" rel="tag">ssh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssl/" rel="tag">ssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tex/" rel="tag">tex</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tldr/" rel="tag">tldr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/typesetting-language/" rel="tag">typesetting language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/" rel="tag">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ufw/" rel="tag">ufw</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/upgrade/" rel="tag">upgrade</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/uvicorn/" rel="tag">uvicorn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/uwsgi/" rel="tag">uwsgi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vercel/" rel="tag">vercel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows/" rel="tag">windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zip/" rel="tag">zip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zsh/" rel="tag">zsh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A/" rel="tag">延迟绑定</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82%E8%B0%88/" rel="tag">杂谈</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AD%E5%8C%85/" rel="tag">闭包</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/" rel="tag">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ascii-art/" rel="tag">ascii art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/asyncache/" rel="tag">asyncache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/barrier/" rel="tag">barrier</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cachetools/" rel="tag">cachetools</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chinese/" rel="tag">chinese</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/color/" rel="tag">color</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/coming/" rel="tag">coming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/command-line/" rel="tag">command line</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crack/" rel="tag">crack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crossref/" rel="tag">crossref</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dist/" rel="tag">dist</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dpkg/" rel="tag">dpkg</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/error/" rel="tag">error</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/example/" rel="tag">example</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fastapi/" rel="tag">fastapi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewall/" rel="tag">firewall</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish/" rel="tag">fish</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish-shell/" rel="tag">fish-shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flask/" rel="tag">flask</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fun/" rel="tag">fun</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/" rel="tag">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/" rel="tag">https</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/image/" rel="tag">image</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ip/" rel="tag">ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jinja2/" rel="tag">jinja2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kdeconnect/" rel="tag">kdeconnect</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/keyboard/" rel="tag">keyboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/language/" rel="tag">language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/limit/" rel="tag">limit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/list/" rel="tag">list</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maddy/" rel="tag">maddy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mail/" rel="tag">mail</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/man/" rel="tag">man</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/manjaro/" rel="tag">manjaro</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/monitor/" rel="tag">monitor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nvm/" rel="tag">nvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oh-my-posh/" rel="tag">oh-my-posh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pool/" rel="tag">pool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/powsershell/" rel="tag">powsershell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/print/" rel="tag">print</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/proxy/" rel="tag">proxy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/psreadline/" rel="tag">psreadline</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/query/" rel="tag">query</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/retry/" rel="tag">retry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scholar/" rel="tag">scholar</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scoop/" rel="tag">scoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/self-host/" rel="tag">self-host</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/settings/" rel="tag">settings</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/socket/" rel="tag">socket</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/" rel="tag">ssh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssl/" rel="tag">ssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tex/" rel="tag">tex</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tldr/" rel="tag">tldr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tutorial/" rel="tag">tutorial</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/typesetting-language/" rel="tag">typesetting language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/" rel="tag">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ufw/" rel="tag">ufw</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/upgrade/" rel="tag">upgrade</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/uvicorn/" rel="tag">uvicorn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/uwsgi/" rel="tag">uwsgi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vercel/" rel="tag">vercel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows/" rel="tag">windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/yaml/" rel="tag">yaml</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zip/" rel="tag">zip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zsh/" rel="tag">zsh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A/" rel="tag">延迟绑定</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82%E8%B0%88/" rel="tag">杂谈</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AD%E5%8C%85/" rel="tag">闭包</a></li></ul>
     </div>
   </div>
 
@@ -598,7 +617,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/ascii-art/" style="font-size: 10px;">ascii art</a> <a href="/tags/asyncache/" style="font-size: 10px;">asyncache</a> <a href="/tags/barrier/" style="font-size: 10px;">barrier</a> <a href="/tags/cachetools/" style="font-size: 10px;">cachetools</a> <a href="/tags/chinese/" style="font-size: 10px;">chinese</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/color/" style="font-size: 10px;">color</a> <a href="/tags/coming/" style="font-size: 10px;">coming</a> <a href="/tags/command-line/" style="font-size: 10px;">command line</a> <a href="/tags/crack/" style="font-size: 10px;">crack</a> <a href="/tags/crossref/" style="font-size: 10px;">crossref</a> <a href="/tags/dist/" style="font-size: 10px;">dist</a> <a href="/tags/dpkg/" style="font-size: 10px;">dpkg</a> <a href="/tags/error/" style="font-size: 10px;">error</a> <a href="/tags/example/" style="font-size: 10px;">example</a> <a href="/tags/fastapi/" style="font-size: 10px;">fastapi</a> <a href="/tags/firewall/" style="font-size: 10px;">firewall</a> <a href="/tags/fish/" style="font-size: 10px;">fish</a> <a href="/tags/fish-shell/" style="font-size: 10px;">fish-shell</a> <a href="/tags/flask/" style="font-size: 10px;">flask</a> <a href="/tags/fun/" style="font-size: 10px;">fun</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/image/" style="font-size: 10px;">image</a> <a href="/tags/ip/" style="font-size: 12.5px;">ip</a> <a href="/tags/jinja2/" style="font-size: 10px;">jinja2</a> <a href="/tags/kdeconnect/" style="font-size: 10px;">kdeconnect</a> <a href="/tags/keyboard/" style="font-size: 10px;">keyboard</a> <a href="/tags/language/" style="font-size: 10px;">language</a> <a href="/tags/latex/" style="font-size: 10px;">latex</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/maddy/" style="font-size: 10px;">maddy</a> <a href="/tags/mail/" style="font-size: 10px;">mail</a> <a href="/tags/man/" style="font-size: 10px;">man</a> <a href="/tags/manjaro/" style="font-size: 10px;">manjaro</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/monitor/" style="font-size: 10px;">monitor</a> <a href="/tags/nvm/" style="font-size: 10px;">nvm</a> <a href="/tags/oh-my-posh/" style="font-size: 10px;">oh-my-posh</a> <a href="/tags/pool/" style="font-size: 10px;">pool</a> <a href="/tags/powsershell/" style="font-size: 10px;">powsershell</a> <a href="/tags/print/" style="font-size: 12.5px;">print</a> <a href="/tags/proxy/" style="font-size: 10px;">proxy</a> <a href="/tags/psreadline/" style="font-size: 10px;">psreadline</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/retry/" style="font-size: 10px;">retry</a> <a href="/tags/scholar/" style="font-size: 10px;">scholar</a> <a href="/tags/scoop/" style="font-size: 10px;">scoop</a> <a href="/tags/self-host/" style="font-size: 12.5px;">self-host</a> <a href="/tags/settings/" style="font-size: 10px;">settings</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/socket/" style="font-size: 10px;">socket</a> <a href="/tags/ssh/" style="font-size: 12.5px;">ssh</a> <a href="/tags/ssl/" style="font-size: 10px;">ssl</a> <a href="/tags/tex/" style="font-size: 10px;">tex</a> <a href="/tags/tldr/" style="font-size: 10px;">tldr</a> <a href="/tags/typesetting-language/" style="font-size: 10px;">typesetting language</a> <a href="/tags/ubuntu/" style="font-size: 17.5px;">ubuntu</a> <a href="/tags/ufw/" style="font-size: 10px;">ufw</a> <a href="/tags/upgrade/" style="font-size: 10px;">upgrade</a> <a href="/tags/uvicorn/" style="font-size: 10px;">uvicorn</a> <a href="/tags/uwsgi/" style="font-size: 10px;">uwsgi</a> <a href="/tags/vercel/" style="font-size: 10px;">vercel</a> <a href="/tags/windows/" style="font-size: 12.5px;">windows</a> <a href="/tags/zip/" style="font-size: 10px;">zip</a> <a href="/tags/zsh/" style="font-size: 10px;">zsh</a> <a href="/tags/%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A/" style="font-size: 10px;">延迟绑定</a> <a href="/tags/%E6%9D%82%E8%B0%88/" style="font-size: 10px;">杂谈</a> <a href="/tags/%E9%97%AD%E5%8C%85/" style="font-size: 10px;">闭包</a>
+      <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/ascii-art/" style="font-size: 10px;">ascii art</a> <a href="/tags/asyncache/" style="font-size: 10px;">asyncache</a> <a href="/tags/barrier/" style="font-size: 10px;">barrier</a> <a href="/tags/cachetools/" style="font-size: 10px;">cachetools</a> <a href="/tags/chinese/" style="font-size: 10px;">chinese</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/color/" style="font-size: 10px;">color</a> <a href="/tags/coming/" style="font-size: 10px;">coming</a> <a href="/tags/command-line/" style="font-size: 10px;">command line</a> <a href="/tags/crack/" style="font-size: 10px;">crack</a> <a href="/tags/crossref/" style="font-size: 10px;">crossref</a> <a href="/tags/dist/" style="font-size: 10px;">dist</a> <a href="/tags/dpkg/" style="font-size: 10px;">dpkg</a> <a href="/tags/error/" style="font-size: 10px;">error</a> <a href="/tags/example/" style="font-size: 10px;">example</a> <a href="/tags/fastapi/" style="font-size: 10px;">fastapi</a> <a href="/tags/firewall/" style="font-size: 10px;">firewall</a> <a href="/tags/fish/" style="font-size: 10px;">fish</a> <a href="/tags/fish-shell/" style="font-size: 10px;">fish-shell</a> <a href="/tags/flask/" style="font-size: 10px;">flask</a> <a href="/tags/fun/" style="font-size: 10px;">fun</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/image/" style="font-size: 10px;">image</a> <a href="/tags/ip/" style="font-size: 12.5px;">ip</a> <a href="/tags/jinja2/" style="font-size: 10px;">jinja2</a> <a href="/tags/kdeconnect/" style="font-size: 10px;">kdeconnect</a> <a href="/tags/keyboard/" style="font-size: 10px;">keyboard</a> <a href="/tags/language/" style="font-size: 10px;">language</a> <a href="/tags/latex/" style="font-size: 10px;">latex</a> <a href="/tags/limit/" style="font-size: 10px;">limit</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/list/" style="font-size: 10px;">list</a> <a href="/tags/maddy/" style="font-size: 10px;">maddy</a> <a href="/tags/mail/" style="font-size: 10px;">mail</a> <a href="/tags/man/" style="font-size: 10px;">man</a> <a href="/tags/manjaro/" style="font-size: 10px;">manjaro</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/monitor/" style="font-size: 10px;">monitor</a> <a href="/tags/nvm/" style="font-size: 10px;">nvm</a> <a href="/tags/oh-my-posh/" style="font-size: 10px;">oh-my-posh</a> <a href="/tags/pool/" style="font-size: 10px;">pool</a> <a href="/tags/powsershell/" style="font-size: 10px;">powsershell</a> <a href="/tags/print/" style="font-size: 12.5px;">print</a> <a href="/tags/proxy/" style="font-size: 10px;">proxy</a> <a href="/tags/psreadline/" style="font-size: 10px;">psreadline</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/query/" style="font-size: 10px;">query</a> <a href="/tags/retry/" style="font-size: 10px;">retry</a> <a href="/tags/scholar/" style="font-size: 10px;">scholar</a> <a href="/tags/scoop/" style="font-size: 10px;">scoop</a> <a href="/tags/self-host/" style="font-size: 12.5px;">self-host</a> <a href="/tags/settings/" style="font-size: 10px;">settings</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/socket/" style="font-size: 10px;">socket</a> <a href="/tags/ssh/" style="font-size: 12.5px;">ssh</a> <a href="/tags/ssl/" style="font-size: 10px;">ssl</a> <a href="/tags/tex/" style="font-size: 10px;">tex</a> <a href="/tags/tldr/" style="font-size: 10px;">tldr</a> <a href="/tags/tutorial/" style="font-size: 10px;">tutorial</a> <a href="/tags/typesetting-language/" style="font-size: 10px;">typesetting language</a> <a href="/tags/ubuntu/" style="font-size: 17.5px;">ubuntu</a> <a href="/tags/ufw/" style="font-size: 10px;">ufw</a> <a href="/tags/upgrade/" style="font-size: 10px;">upgrade</a> <a href="/tags/uvicorn/" style="font-size: 10px;">uvicorn</a> <a href="/tags/uwsgi/" style="font-size: 10px;">uwsgi</a> <a href="/tags/vercel/" style="font-size: 10px;">vercel</a> <a href="/tags/windows/" style="font-size: 12.5px;">windows</a> <a href="/tags/yaml/" style="font-size: 10px;">yaml</a> <a href="/tags/zip/" style="font-size: 10px;">zip</a> <a href="/tags/zsh/" style="font-size: 10px;">zsh</a> <a href="/tags/%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A/" style="font-size: 10px;">延迟绑定</a> <a href="/tags/%E6%9D%82%E8%B0%88/" style="font-size: 10px;">杂谈</a> <a href="/tags/%E9%97%AD%E5%8C%85/" style="font-size: 10px;">闭包</a>
     </div>
   </div>
 
@@ -620,6 +639,14 @@
       <ul>
         
           <li>
+            <a href="/2023/12/25/yaml%E5%85%A5%E9%97%A8/">yaml入门</a>
+          </li>
+        
+          <li>
+            <a href="/2023/12/25/Python%E4%B8%AD%E5%9F%BA%E4%BA%8E%E5%88%97%E8%A1%A8%E7%9A%84%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2/">Python中基于列表的分页查询</a>
+          </li>
+        
+          <li>
             <a href="/2023/12/23/jinja2%E7%A4%BA%E4%BE%8B/">jinja2示例</a>
           </li>
         
@@ -629,14 +656,6 @@
         
           <li>
             <a href="/2023/11/16/202311/man%E4%B8%8Etldr/">man与tldr</a>
-          </li>
-        
-          <li>
-            <a href="/2023/11/15/202311/ssh%E7%AC%94%E8%AE%B0/">ssh笔记</a>
-          </li>
-        
-          <li>
-            <a href="/2023/11/15/202311/%E7%94%A8Python%E4%BB%8E%E5%9B%BE%E7%89%87%E5%88%9B%E5%BB%BAASCII-Art/">用Python从图片创建ASCII-Art</a>
           </li>
         
       </ul>
