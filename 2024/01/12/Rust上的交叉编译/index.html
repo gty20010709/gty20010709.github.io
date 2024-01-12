@@ -4,15 +4,20 @@
   <meta charset="utf-8">
   
   
-  <title>Tag: example | Theo&#39;s Blog</title>
+  <title>Rust上的交叉编译 | Theo&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Theo&#39;s Blog">
-<meta property="og:url" content="https://gty20010709.github.io/tags/example/index.html">
+  <meta name="description" content="缘起最近开始看起了 Rust 相关的资料，想要学会一门编译型语言。 之前看 Golang， 也用 Golang 写过一些小项目，但 Golang 过于简洁，很多东西没有语言层面的支持，比如枚举。 在使用Rust写了一些小工具后，我希望能够发送给朋友们使用，但我用的是 Manjaro Linux， 多数人用的是 Windows。所以，我就需要在 Linux上为Windows平台编译二进制文件，即交叉">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust上的交叉编译">
+<meta property="og:url" content="https://gty20010709.github.io/2024/01/12/Rust%E4%B8%8A%E7%9A%84%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/index.html">
 <meta property="og:site_name" content="Theo&#39;s Blog">
+<meta property="og:description" content="缘起最近开始看起了 Rust 相关的资料，想要学会一门编译型语言。 之前看 Golang， 也用 Golang 写过一些小项目，但 Golang 过于简洁，很多东西没有语言层面的支持，比如枚举。 在使用Rust写了一些小工具后，我希望能够发送给朋友们使用，但我用的是 Manjaro Linux， 多数人用的是 Windows。所以，我就需要在 Linux上为Windows平台编译二进制文件，即交叉">
 <meta property="og:locale">
+<meta property="article:published_time" content="2024-01-12T03:33:39.000Z">
+<meta property="article:modified_time" content="2024-01-12T03:51:27.817Z">
 <meta property="article:author" content="Theo Cheng">
-<meta property="article:tag" content="Python, Chinese">
+<meta property="article:tag" content="rust">
+<meta property="article:tag" content="cross compile">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="Theo's Blog" type="application/atom+xml">
@@ -72,39 +77,67 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2023" class="archive-year">2023</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2023/12/23/2023/202312/jinja2%E7%A4%BA%E4%BE%8B/" class="archive-article-date">
-  <time class="dt-published" datetime="2023-12-23T14:16:12.000Z" itemprop="datePublished">Dec 23</time>
+        <section id="main"><article id="post-Rust上的交叉编译" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/01/12/Rust%E4%B8%8A%E7%9A%84%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/" class="article-date">
+  <time class="dt-published" datetime="2024-01-12T03:33:39.000Z" itemprop="datePublished">2024-01-12</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2023/12/23/2023/202312/jinja2%E7%A4%BA%E4%BE%8B/">jinja2示例</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      Rust上的交叉编译
     </h1>
   
 
-    </header>
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="缘起"><a href="#缘起" class="headerlink" title="缘起"></a>缘起</h2><p>最近开始看起了 Rust 相关的资料，想要学会一门编译型语言。 之前看 Golang， 也用 Golang 写过一些小项目，但 Golang 过于简洁，很多东西没有语言层面的支持，比如枚举。</p>
+<p>在使用Rust写了一些小工具后，我希望能够发送给朋友们使用，但我用的是 Manjaro Linux， 多数人用的是 Windows。所以，我就需要在 Linux上为Windows平台编译二进制文件，即交叉编译。</p>
+<h2 id="文档"><a href="#文档" class="headerlink" title="文档"></a>文档</h2><p>Rust中关于交叉编译的部分，可以参见:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://doc.rust-lang.org/nightly/rustc/platform-support.html">Rustc 的平台支持</a></li>
+<li><a target="_blank" rel="noopener" href="https://rust-lang.github.io/rustup/cross-compilation.html">Rustup 手册中的”交叉编译“部分</a></li>
+</ul>
+<h2 id="记录"><a href="#记录" class="headerlink" title="记录"></a>记录</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yay mingw-w64-gcc # 安装对应平台的编译器支持</span><br><span class="line">rustup add target x86_64-pc-windows-gnu</span><br><span class="line">cargo build target=x86_64-cp-windows-gnu</span><br></pre></td></tr></table></figure>
+
+<p>上面这是针对Windows64位系统的，我也尝试了针对 MacOS系统，但踩了许多坑，希望像我一样专门写<code>hello-world</code>的编程爱好者们就此止步，等过些年再看看在Linux能否为MacOS编译二进制文件。</p>
+<p>对应平台的编译器支持，采用的是 <code>osxcross</code> 这个项目，但编译卡在了程序版本上： </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">error: linking with `x86_64-apple-darwin15-cc` failed: exit status: 1</span><br><span class="line">  |</span><br><span class="line">  = note: env -u IPHONEOS_DEPLOYMENT_TARGET -u TVOS_DEPLOYMENT_TARGET LC_ALL=&quot;C&quot; PATH=&quot;...&quot; VSLANG=&quot;1033&quot; ZERO_AR_DATE=&quot;1&quot; &quot;x86_64-apple-darwin15-cc&quot; &quot;-arch&quot; &quot;x86_64&quot; &quot;-m64&quot; &quot;/tmp/rustc3R6mcD/symbols.o&quot; &quot;~/tmp/Rust/ssc_init/target/x86_64-apple-darwin/release/deps/ssc_init-78b41096a0d04a89.ssc_init.c1d02bf16cffcc24-cgu.0.rcgu.o&quot; &quot;-L&quot; &quot;~/tmp/Rust/ssc_init/target/x86_64-apple-darwin/release/deps&quot; &quot;-L&quot; &quot;~/tmp/Rust/ssc_init/target/release/deps&quot; &quot;-L&quot; &quot;~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-apple-darwin/lib&quot; &quot;~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-apple-darwin/lib/libcompiler_builtins-11c3039f74959a20.rlib&quot; &quot;-lc&quot; &quot;-lm&quot; &quot;-liconv&quot; &quot;-lSystem&quot; &quot;-lc&quot; &quot;-lm&quot; &quot;-L&quot; &quot;~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-apple-darwin/lib&quot; &quot;-o&quot; &quot;~/tmp/Rust/ssc_init/target/x86_64-apple-darwin/release/deps/ssc_init-78b41096a0d04a89&quot; &quot;-Wl,-dead_strip&quot; &quot;-nodefaultlibs&quot;</span><br><span class="line">  = note: ld: warning: object file (~/tmp/Rust/ssc_init/target/x86_64-apple-darwin/release/deps/ssc_init-78b41096a0d04a89.ssc_init.c1d02bf16cffcc24-cgu.0.rcgu.o) was built for newer macOS version (10.12) than being linked (10.6)</span><br><span class="line">          ld: warning: object file (/tmp/rustc3R6mcD/symbols.o) was built for newer macOS version (10.12) than being linked (10.6)</span><br><span class="line">          Undefined symbols for architecture x86_64:</span><br><span class="line">            &quot;_getentropy&quot;, referenced from:</span><br><span class="line">                _$LT$rand_core..os..OsRng$u20$as$u20$rand_core..RngCore$GT$::try_fill_bytes::h65cff0af602336c9 in ssc_init-78b41096a0d04a89.ssc_init.c1d02bf16cffcc24-cgu.0.rcgu.o</span><br><span class="line">            &quot;_clock_gettime&quot;, referenced from:</span><br><span class="line">                ssc_init::main::hf654aa1055944d98 in ssc_init-78b41096a0d04a89.ssc_init.c1d02bf16cffcc24-cgu.0.rcgu.o</span><br><span class="line">          ld: symbol(s) not found for architecture x86_64</span><br><span class="line">          clang-16: error: linker command failed with exit code 1 (use -v to see invocation)</span><br><span class="line">          </span><br></pre></td></tr></table></figure>
+<p>除了osx的编译器过旧之外， 还存在其他问题，暂且搁置。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gty20010709.github.io/2024/01/12/Rust%E4%B8%8A%E7%9A%84%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/" data-id="clra3qrfn000061z9ckmnf2y9" data-title="Rust上的交叉编译" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cross-compile/" rel="tag">cross compile</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rust/" rel="tag">rust</a></li></ul>
+
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/01/07/%E8%AE%A9Rust%E7%BC%96%E8%AF%91%E7%9A%84%E7%A8%8B%E5%BA%8F%E4%BD%93%E7%A7%AF%E6%9C%80%E5%B0%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Älter</strong>
+      <div class="article-nav-title">让Rust编译的程序体积最小</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
 
 
 </section>
