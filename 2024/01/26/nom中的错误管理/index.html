@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>nom中的错误管理 | Theo&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="译自：https:&#x2F;&#x2F;github.com&#x2F;rust-bakery&#x2F;nom&#x2F;blob&#x2F;main&#x2F;doc&#x2F;error_management.md 错误管理nom 的错误设计考虑了多种需求：  指示哪个解析器失败以及输入数据中的位置 随着错误向上传递，累积更多的上下文信息 具有非常低的开销，因为调用解析器通常会丢弃错误（例如：many0，alt） 可以根据用户的需求进行修改，因为某些语言需要更多的信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nom中的错误管理">
+<meta property="og:url" content="https://gty20010709.github.io/2024/01/26/nom%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AF%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="Theo&#39;s Blog">
+<meta property="og:description" content="译自：https:&#x2F;&#x2F;github.com&#x2F;rust-bakery&#x2F;nom&#x2F;blob&#x2F;main&#x2F;doc&#x2F;error_management.md 错误管理nom 的错误设计考虑了多种需求：  指示哪个解析器失败以及输入数据中的位置 随着错误向上传递，累积更多的上下文信息 具有非常低的开销，因为调用解析器通常会丢弃错误（例如：many0，alt） 可以根据用户的需求进行修改，因为某些语言需要更多的信息">
+<meta property="og:locale">
+<meta property="article:published_time" content="2024-01-26T09:06:59.000Z">
+<meta property="article:modified_time" content="2024-01-26T09:08:29.491Z">
+<meta property="article:author" content="Theo Cheng">
+<meta property="article:tag" content="error">
+<meta property="article:tag" content="rust">
+<meta property="article:tag" content="nom">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Theo's Blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Theo&#39;s Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Suche"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Suche"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://gty20010709.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-nom中的错误管理" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/01/26/nom%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AF%E7%AE%A1%E7%90%86/" class="article-date">
+  <time class="dt-published" datetime="2024-01-26T09:06:59.000Z" itemprop="datePublished">2024-01-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      nom中的错误管理
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p><strong>译自：<a target="_blank" rel="noopener" href="https://github.com/rust-bakery/nom/blob/main/doc/error_management.md">https://github.com/rust-bakery/nom/blob/main/doc/error_management.md</a></strong></p>
+<h1 id="错误管理"><a href="#错误管理" class="headerlink" title="错误管理"></a>错误管理</h1><p>nom 的错误设计考虑了多种需求：</p>
+<ul>
+<li>指示哪个解析器失败以及输入数据中的位置</li>
+<li>随着错误向上传递，累积更多的上下文信息</li>
+<li>具有非常低的开销，因为调用解析器通常会丢弃错误（例如：<code>many0</code>，<code>alt</code>）</li>
+<li>可以根据用户的需求进行修改，因为某些语言需要更多的信息</li>
+</ul>
+<p>为了满足这些要求，nom 解析器必须返回以下结果类型：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义 nom 解析器的结果类型</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">type</span> <span class="title class_">IResult</span>&lt;I, O, E=nom::error::Error&lt;I&gt;&gt; = <span class="type">Result</span>&lt;(I, O), nom::<span class="literal">Err</span>&lt;E&gt;&gt;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义错误类型，包括 Incomplete（不完整）、Error（错误）和 Failure（失败）</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">enum</span> <span class="title class_">Err</span>&lt;E&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Incomplete</span>(Needed), <span class="comment">// 表示需要更多的输入</span></span><br><span class="line">    <span class="title function_ invoke__">Error</span>(E),           <span class="comment">// 表示解析器遇到了错误</span></span><br><span class="line">    <span class="title function_ invoke__">Failure</span>(E),         <span class="comment">// 表示解析器在处理过程中失败</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>结果要么是一个 <code>Ok((I, O))</code>，包含剩余的输入和解析出的值，要么是一个 <code>Err(nom::Err&lt;E&gt;)</code>，其中 <code>E</code> 是错误类型。<code>nom::Err&lt;E&gt;</code> 是一个枚举，因为组合子根据值可以有不同的行为。<code>Err&lt;E&gt;</code> 枚举表示解析器错误的 3 种情况：</p>
+<ul>
+<li><code>Incomplete</code> 表示解析器没有足够的数据来做决定。这可能是由 <code>streaming</code> 子模块中的解析器返回的，表示我们应该从文件或套接字中缓冲更多数据。<code>complete</code> 子模块中的解析器假设它们拥有整个输入数据，因此如果不够，它们将返回 <code>Err::Error</code>。当解析器返回 <code>Incomplete</code> 时，我们应该在缓冲区中累积更多数据（例如：从套接字中读取），然后再次调用解析器。</li>
+<li><code>Error</code> 是正常的解析器错误。如果 <code>alt</code> 组合子的子解析器返回 <code>Error</code>，它将尝试另一个子解析器。</li>
+<li><code>Failure</code> 是无法恢复的错误：如果子解析器返回 <code>Failure</code>，<code>alt</code> 组合子将不会尝试其他分</li>
+</ul>
+<p>如果我们运行一个解析器并且知道它不会返回 <code>Err::Incomplete</code>，我们可以直接使用 <code>finish()</code> 方法从 <code>Err::Error</code> 或 <code>Err::Failure</code> 中提取错误类型：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个 nom 解析器的结果类型</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">parser_result</span>: IResult&lt;I, O, E&gt; = <span class="title function_ invoke__">parser</span>(input);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 finish() 方法从解析器结果中提取出最终的结果或错误类型</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">result</span>: <span class="type">Result</span>&lt;(I, O), E&gt; = parser_result.<span class="title function_ invoke__">finish</span>();</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果我们使用了借用类型(a borrowed type)作为输入，比如 <code>&amp;[u8]</code> 或 <code>&amp;str</code>，我们可能想要将其转换为拥有的类型(an owned type)，以便将其传递到其他地方，使用 <code>to_owned()</code> 方法：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个结果类型，包含剩余的输入数据和解析得到的值，以及错误类型</span></span><br><span class="line"><span class="keyword">let</span> <span class="variable">result</span>: <span class="type">Result</span>&lt;(&amp;[<span class="type">u8</span>], Value), <span class="literal">Err</span>&lt;<span class="type">Vec</span>&lt;<span class="type">u8</span>&gt;&gt;&gt; =</span><br><span class="line">  <span class="comment">// 运行解析器，如果出错则通过 map_err 转换错误类型为需要的类型</span></span><br><span class="line">  <span class="title function_ invoke__">parser</span>(data).<span class="title function_ invoke__">map_err</span>(|e: E&lt;&amp;[<span class="type">u8</span>]&gt;| e.<span class="title function_ invoke__">to_owned</span>());</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>nom 提供了一个强大的错误系统，可以根据您的需求进行调整：如果要提高性能，您可以获取简化的错误信息，或者如果想要获得解析器应用的详细跟踪，可以获取精确的位置信息。</p>
+<p>这是通过 <code>IResult</code> 的第三个类型参数完成的，nom 的解析器结果类型：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义 nom 解析器的结果类型，包含输入类型 I、输出类型 O、以及可选的错误类型 E</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">type</span> <span class="title class_">IResult</span>&lt;I, O, E=nom::error::Error&lt;I&gt;&gt; = <span class="type">Result</span>&lt;(I, O), <span class="literal">Err</span>&lt;E&gt;&gt;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义错误类型 Err&lt;E&gt;，其中 E 是错误的具体类型</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">enum</span> <span class="title class_">Err</span>&lt;E&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">Incomplete</span>(Needed), <span class="comment">// 表示需要更多的输入</span></span><br><span class="line">    <span class="title function_ invoke__">Error</span>(E),           <span class="comment">// 表示解析器遇到了错误</span></span><br><span class="line">    <span class="title function_ invoke__">Failure</span>(E),         <span class="comment">// 表示解析器在处理过程中失败</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个错误类型在 nom 的组合子中是完全通用的，因此在定义解析器时或直接在调用的地方，您可以精确地选择要使用的错误类型。请参阅<a target="_blank" rel="noopener" href="https://github.com/rust-bakery/nom/blob/5405e1173f1052f7e006dcb0b9cfda2b06557b65/examples/json.rs#L209-L286">JSON解析器的示例</a>，了解在调用的地方选择不同错误类型的示例。</p>
+<h2 id="常见的错误类型"><a href="#常见的错误类型" class="headerlink" title="常见的错误类型"></a>常见的错误类型</h2><h3 id="默认错误类型：nom-error-Error"><a href="#默认错误类型：nom-error-Error" class="headerlink" title="默认错误类型：nom::error::Error"></a>默认错误类型：nom::error::Error</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug, PartialEq)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">Error</span>&lt;I&gt; &#123;</span><br><span class="line">  <span class="comment">/// 错误在输入数据中的位置</span></span><br><span class="line">  <span class="keyword">pub</span> input: I,</span><br><span class="line">  <span class="comment">/// nom 错误代码</span></span><br><span class="line">  <span class="keyword">pub</span> code: ErrorKind,</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个结构包含一个 <code>nom::error::ErrorKind</code>，指示哪种类型的解析器遇到了错误（例如：<code>ErrorKind::Tag</code> 用于 <code>tag()</code> 组合子），以及错误的输入位置。</p>
+<p>这种错误类型速度快，开销非常低，因此适用于被反复调用的解析器，比如在网络协议中。然而，它非常有限，不会告诉您解析器调用链，因此不足以生成用户友好的错误信息。</p>
+<p>在类似 JSON 的解析器（来自 <code>examples/json.rs</code>）中返回的示例错误：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">data</span> = <span class="string">&quot;  &#123; \&quot;a\&quot;\t: 42,</span></span><br><span class="line"><span class="string">\&quot;b\&quot;: [ \&quot;x\&quot;, \&quot;y\&quot;, 12 ] ,</span></span><br><span class="line"><span class="string">\&quot;c\&quot;: &#123; 1\&quot;hello\&quot; : \&quot;world\&quot;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125; &quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将会打印：</span></span><br><span class="line"><span class="comment">// Err(</span></span><br><span class="line"><span class="comment">//   Failure(</span></span><br><span class="line"><span class="comment">//       Error &#123;</span></span><br><span class="line"><span class="comment">//           input: &quot;1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;,</span></span><br><span class="line"><span class="comment">//           code: Char,</span></span><br><span class="line"><span class="comment">//       &#125;,</span></span><br><span class="line"><span class="comment">//   ),</span></span><br><span class="line"><span class="comment">// )</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 假设有一个名为 json 的解析器函数，它的泛型参数 T 代表错误类型</span></span><br><span class="line"><span class="comment">// 这里我们显式指定 T 为 Error&lt;&amp;str&gt;，即期望错误类型是字符串引用</span></span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">  <span class="string">&quot;&#123;:#?&#125;\n&quot;</span>,</span><br><span class="line">  <span class="comment">// 调用 json 解析器，传入数据 data，并指定错误类型为 Error&lt;&amp;str&gt;</span></span><br><span class="line">  json::&lt;Error&lt;&amp;<span class="type">str</span>&gt;&gt;(data)</span><br><span class="line">);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="获取更多信息：nom-error-VerboseError"><a href="#获取更多信息：nom-error-VerboseError" class="headerlink" title="获取更多信息：nom::error::VerboseError"></a>获取更多信息：nom::error::VerboseError</h3><p><code>VerboseError&lt;I&gt;</code> 类型会积累有关遇到错误的解析器链的更多信息：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Clone, Debug, PartialEq)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">VerboseError</span>&lt;I&gt; &#123;</span><br><span class="line">  <span class="comment">/// 由 `VerboseError` 积累的错误列表，</span></span><br><span class="line">  <span class="comment">/// 包含部分受影响的输入数据和一些上下文</span></span><br><span class="line">  <span class="keyword">pub</span> errors: crate::lib::std::vec::<span class="type">Vec</span>&lt;(I, VerboseErrorKind)&gt;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#[derive(Clone, Debug, PartialEq)]</span></span><br><span class="line"><span class="comment">/// `VerboseError` 的错误上下文</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">enum</span> <span class="title class_">VerboseErrorKind</span> &#123;</span><br><span class="line">  <span class="comment">/// 由 `context` 函数添加的静态字符串</span></span><br><span class="line">  <span class="title function_ invoke__">Context</span>(&amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>),</span><br><span class="line">  <span class="comment">/// 由 `char` 函数期望的字符</span></span><br><span class="line">  <span class="title function_ invoke__">Char</span>(<span class="type">char</span>),</span><br><span class="line">  <span class="comment">/// 由各种 nom 解析器提供的错误类型</span></span><br><span class="line">  <span class="title function_ invoke__">Nom</span>(ErrorKind),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它包含了每个解析器的输入位置和错误代码。它不会累积来自 <code>alt</code> 不同分支的错误，它只会包含它尝试的最后一个分支的错误。</p>
+<p>它可以与 <code>nom::error::context</code> 组合子一起使用，以提供有关解析器链的信息：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">context</span>(</span><br><span class="line">  <span class="string">&quot;string&quot;</span>,</span><br><span class="line">  <span class="title function_ invoke__">preceded</span>(<span class="title function_ invoke__">char</span>(<span class="string">&#x27;\&quot;&#x27;</span>), <span class="title function_ invoke__">cut</span>(<span class="title function_ invoke__">terminated</span>(parse_str, <span class="title function_ invoke__">char</span>(<span class="string">&#x27;\&quot;&#x27;</span>)))),</span><br><span class="line">)(i)</span><br></pre></td></tr></table></figure>
+
+<p>如果直接打印，输出的信息并不容易阅读：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 解析详细信息: Err(</span></span><br><span class="line"><span class="comment">//   Failure(</span></span><br><span class="line"><span class="comment">//       VerboseError &#123;</span></span><br><span class="line"><span class="comment">//           errors: [</span></span><br><span class="line"><span class="comment">//               (</span></span><br><span class="line"><span class="comment">//                   &quot;1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;,</span></span><br><span class="line"><span class="comment">//                   Char(</span></span><br><span class="line"><span class="comment">//                       &#x27;&#125;&#x27;,</span></span><br><span class="line"><span class="comment">//                   ),</span></span><br><span class="line"><span class="comment">//               ),</span></span><br><span class="line"><span class="comment">//               (</span></span><br><span class="line"><span class="comment">//                   &quot;&#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;,</span></span><br><span class="line"><span class="comment">//                   Context(</span></span><br><span class="line"><span class="comment">//                       &quot;map&quot;,</span></span><br><span class="line"><span class="comment">//                   ),</span></span><br><span class="line"><span class="comment">//               ),</span></span><br><span class="line"><span class="comment">//               (</span></span><br><span class="line"><span class="comment">//                   &quot;&#123; \&quot;a\&quot;\t: 42,\n  \&quot;b\&quot;: [ \&quot;x\&quot;, \&quot;y\&quot;, 12 ] ,\n  \&quot;c\&quot;: &#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;,</span></span><br><span class="line"><span class="comment">//                   Context(</span></span><br><span class="line"><span class="comment">//                       &quot;map&quot;,</span></span><br><span class="line"><span class="comment">//                   ),</span></span><br><span class="line"><span class="comment">//               ),</span></span><br><span class="line"><span class="comment">//           ],</span></span><br><span class="line"><span class="comment">//       &#125;,</span></span><br><span class="line"><span class="comment">//   ),</span></span><br><span class="line"><span class="comment">// )</span></span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;解析详细信息: &#123;:#?&#125;&quot;</span>, json::&lt;VerboseError&lt;&amp;<span class="type">str</span>&gt;&gt;(data));</span><br></pre></td></tr></table></figure>
+
+<p>但通过查看原始输入和错误链，我们可以构建一个更用户友好的错误消息。<code>nom::error::convert_error</code> 函数可以构建这样的消息。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">e</span> = json::&lt;VerboseError&lt;&amp;<span class="type">str</span>&gt;&gt;(data).<span class="title function_ invoke__">finish</span>().<span class="title function_ invoke__">err</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line"><span class="comment">// 在这里我们使用 `convert_error` 函数，将 `VerboseError&lt;&amp;str&gt;` 转换为可打印的跟踪信息。</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// 这将打印：</span></span><br><span class="line"><span class="comment">// verbose errors - `json::&lt;VerboseError&lt;&amp;str&gt;&gt;(data)`:</span></span><br><span class="line"><span class="comment">// 0: 在第 2 行：</span></span><br><span class="line"><span class="comment">//   &quot;c&quot;: &#123; 1&quot;hello&quot; : &quot;world&quot;</span></span><br><span class="line"><span class="comment">//          ^</span></span><br><span class="line"><span class="comment">// 期望 &#x27;&#125;&#x27;, 发现 1</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// 1: 在第 2 行，位于 map 中：</span></span><br><span class="line"><span class="comment">//   &quot;c&quot;: &#123; 1&quot;hello&quot; : &quot;world&quot;</span></span><br><span class="line"><span class="comment">//        ^</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// 2: 在第 0 行，位于 map 中：</span></span><br><span class="line"><span class="comment">//   &#123; &quot;a&quot; : 42,</span></span><br><span class="line"><span class="comment">//   ^</span></span><br><span class="line"><span class="built_in">println!</span>(</span><br><span class="line">  <span class="string">&quot;verbose errors - `json::&lt;VerboseError&lt;&amp;str&gt;&gt;(data)`:\n&#123;&#125;&quot;</span>,</span><br><span class="line">  <span class="title function_ invoke__">convert_error</span>(data, e)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>请注意，<code>VerboseError</code> 和 <code>convert_error</code> 被设计为语言错误的起点，但它们无法涵盖所有用例。因此，可能需要编写自定义的 <code>convert_error</code> 函数。</p>
+<h3 id="提升可用性：nom-locate-和-nom-supreme"><a href="#提升可用性：nom-locate-和-nom-supreme" class="headerlink" title="提升可用性：nom_locate 和 nom-supreme"></a>提升可用性：nom_locate 和 nom-supreme</h3><p>这些 crate 的开发旨在提高编写 nom 解析器时的用户体验。</p>
+<h4 id="nom-locate"><a href="#nom-locate" class="headerlink" title="nom_locate"></a>nom_locate</h4><p><a target="_blank" rel="noopener" href="https://docs.rs/nom_locate">nom_locate</a> 将输入数据包装在一个 <code>Span</code> 类型中，该类型可以被 nom 解析器理解。该类型提供位置信息，如行和列。</p>
+<h4 id="nom-supreme"><a href="#nom-supreme" class="headerlink" title="nom-supreme"></a>nom-supreme</h4><p><a target="_blank" rel="noopener" href="https://docs.rs/nom-supreme">nom-supreme</a> 提供了 <code>ErrorTree&lt;I&gt;</code> 错误类型，它提供了与 <code>VerboseError</code> 相同的解析器错误链，但还累积了由 <code>alt</code> 尝试的各个分支的错误。</p>
+<p>使用这种错误类型，您可以探索解析器尝试过的所有内容。</p>
+<h2 id="ParseError-Trait"><a href="#ParseError-Trait" class="headerlink" title="ParseError Trait"></a><code>ParseError</code> Trait</h2><p>如果这些错误类型不够用，我们可以通过实现 <code>ParseError&lt;I&gt;</code> trait 来定义自己的错误类型。所有的 nom 组合子都是在这个 trait 上的泛型，因此我们只需要在解析器结果类型中定义它，它就会在所有地方被使用。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">ParseError</span>&lt;I&gt;: <span class="built_in">Sized</span> &#123;</span><br><span class="line">    <span class="comment">/// 根据输入位置和错误类型(ErrorKind)创建一个错误</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">from_error_kind</span>(input: I, kind: ErrorKind) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 将已有的错误与通过输入位置和错误类型(ErrorKind)创建的新错误结合起来</span></span><br><span class="line">    <span class="comment">/// 当通过解析树回溯时，沿途累积错误上下文时非常有用</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">append</span>(input: I, kind: ErrorKind, other: <span class="keyword">Self</span>) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 根据输入位置和期望的字符创建一个错误</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">from_char</span>(input: I, _: <span class="type">char</span>) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        <span class="keyword">Self</span>::<span class="title function_ invoke__">from_error_kind</span>(input, ErrorKind::Char)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 结合两个已有的错误。此函数用于比较在 `alt` 不同分支中生成的错误</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">or</span>(<span class="keyword">self</span>, other: <span class="keyword">Self</span>) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        other</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>任何错误类型都必须实现该 trait，该 trait 要求提供构建错误的方法：</p>
+<ul>
+<li><code>from_error_kind</code>：根据输入位置和指示我们在哪个解析器中遇到错误的 <code>ErrorKind</code> 枚举。</li>
+<li><code>append</code>：允许在通过解析器树回溯时创建错误链（各种组合子将添加更多上下文）。</li>
+<li><code>from_char</code>：创建一个指示我们期望的字符的错误。</li>
+<li><code>or</code>：在像 <code>alt</code> 这样的组合子中，允许在不同分支之间选择错误（或累积它们）。</li>
+</ul>
+<p>我们还可以实现 <code>ContextError</code> trait，以支持 <code>VerboseError&lt;I&gt;</code> 使用的 <code>context()</code> 组合子：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">ContextError</span>&lt;I&gt;: <span class="built_in">Sized</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">add_context</span>(_input: I, _ctx: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>, other: <span class="keyword">Self</span>) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        other</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>还有 <code>FromExternalError&lt;I, E&gt;</code> trait，由 <code>map_res</code> 使用，用于封装其他函数返回的错误：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个 trait，用于在使用 `map_res` 时封装其他函数返回的错误</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">FromExternalError</span>&lt;I, ExternalError&gt; &#123;</span><br><span class="line">  <span class="comment">// 通过外部错误类型创建自定义错误类型</span></span><br><span class="line">  <span class="keyword">fn</span> <span class="title function_">from_external_error</span>(input: I, kind: ErrorKind, e: ExternalError) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="示例用法"><a href="#示例用法" class="headerlink" title="示例用法"></a>示例用法</h3><p>让我们定义一个调试错误类型，每次生成错误时都会打印一些信息。这将使我们深入了解解析器尝试过的内容。由于错误可以彼此组合，我们希望它保留有关刚刚返回的错误的一些信息。我们将把这些信息存储在一个字符串中：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">DebugError</span> &#123;</span><br><span class="line">    message: <span class="type">String</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在让我们在这上面实现 <code>ParseError</code> 和 <code>ContextError</code>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">ParseError</span>&lt;&amp;<span class="type">str</span>&gt; <span class="keyword">for</span> <span class="title class_">DebugError</span> &#123;</span><br><span class="line">    <span class="comment">// 一行中显示错误代码和导致错误的输入</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">from_error_kind</span>(input: &amp;<span class="type">str</span>, kind: ErrorKind) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">message</span> = <span class="built_in">format!</span>(<span class="string">&quot;&#123;:?&#125;:\t&#123;:?&#125;\n&quot;</span>, kind, input);</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, message);</span><br><span class="line">        DebugError &#123; message &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果组合多个错误，我们逐个显示它们</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">append</span>(input: &amp;<span class="type">str</span>, kind: ErrorKind, other: <span class="keyword">Self</span>) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">message</span> = <span class="built_in">format!</span>(<span class="string">&quot;&#123;&#125;&#123;:?&#125;:\t&#123;:?&#125;\n&quot;</span>, other.message, kind, input);</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, message);</span><br><span class="line">        DebugError &#123; message &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 根据输入位置和期望的字符创建一个错误</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">from_char</span>(input: &amp;<span class="type">str</span>, c: <span class="type">char</span>) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">message</span> = <span class="built_in">format!</span>(<span class="string">&quot;&#x27;&#123;&#125;&#x27;:\t&#123;:?&#125;\n&quot;</span>, c, input);</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, message);</span><br><span class="line">        DebugError &#123; message &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 在像 `alt` 这样的组合子中，允许选择或累积不同分支的错误</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">or</span>(<span class="keyword">self</span>, other: <span class="keyword">Self</span>) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">message</span> = <span class="built_in">format!</span>(<span class="string">&quot;&#123;&#125;\tOR\n&#123;&#125;\n&quot;</span>, <span class="keyword">self</span>.message, other.message);</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, message);</span><br><span class="line">        DebugError &#123; message &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">ContextError</span>&lt;&amp;<span class="type">str</span>&gt; <span class="keyword">for</span> <span class="title class_">DebugError</span> &#123;</span><br><span class="line">	<span class="comment">// 添加上下文信息到错误中</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">add_context</span>(input: &amp;<span class="type">str</span>, ctx: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>, other: <span class="keyword">Self</span>) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">message</span> = <span class="built_in">format!</span>(<span class="string">&quot;&#123;&#125;\&quot;&#123;&#125;\&quot;:\t&#123;:?&#125;\n&quot;</span>, other.message, ctx, input);</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, message);</span><br><span class="line">        DebugError &#123; message &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此，当使用这个错误类型调用我们的 JSON 解析器时，我们将得到一个所有解析器停止和回溯的跟踪信息：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;debug: &#123;:#?&#125;&quot;</span>, root::&lt;DebugError&gt;(data));</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">AlphaNumeric:   &quot;\&quot;\t: 42,\n  \&quot;b\&quot;: [ \&quot;x\&quot;, \&quot;y\&quot;, 12 ] ,\n  \&quot;c\&quot;: &#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line"></span><br><span class="line">&#x27;&#123;&#x27;:    &quot;42,\n  \&quot;b\&quot;: [ \&quot;x\&quot;, \&quot;y\&quot;, 12 ] ,\n  \&quot;c\&quot;: &#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line"></span><br><span class="line">&#x27;&#123;&#x27;:    &quot;42,\n  \&quot;b\&quot;: [ \&quot;x\&quot;, \&quot;y\&quot;, 12 ] ,\n  \&quot;c\&quot;: &#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line">&quot;map&quot;:  &quot;42,\n  \&quot;b\&quot;: [ \&quot;x\&quot;, \&quot;y\&quot;, 12 ] ,\n  \&quot;c\&quot;: &#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line"></span><br><span class="line">[..]</span><br><span class="line"></span><br><span class="line">AlphaNumeric:   &quot;\&quot;: &#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line"></span><br><span class="line">&#x27;&quot;&#x27;:    &quot;1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line"></span><br><span class="line">&#x27;&quot;&#x27;:    &quot;1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line">&quot;string&quot;:       &quot;1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line"></span><br><span class="line">&#x27;&#125;&#x27;:    &quot;1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line"></span><br><span class="line">&#x27;&#125;&#x27;:    &quot;1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line">&quot;map&quot;:  &quot;&#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line"></span><br><span class="line">&#x27;&#125;&#x27;:    &quot;1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line">&quot;map&quot;:  &quot;&#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line">&quot;map&quot;:  &quot;&#123; \&quot;a\&quot;\t: 42,\n  \&quot;b\&quot;: [ \&quot;x\&quot;, \&quot;y\&quot;, 12 ] ,\n  \&quot;c\&quot;: &#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line"></span><br><span class="line">debug: Err(</span><br><span class="line">    Failure(</span><br><span class="line">        DebugError &#123;</span><br><span class="line">            message: &quot;&#x27;&#125;&#x27;:\t\&quot;1\\\&quot;hello\\\&quot; : \\\&quot;world\\\&quot;\\n  &#125;\\n  &#125; \&quot;\n\&quot;map\&quot;:\t\&quot;&#123; 1\\\&quot;hello\\\&quot; : \\\&quot;world</span><br><span class="line">\\&quot;\\n  &#125;\\n  &#125; \&quot;\n\&quot;map\&quot;:\t\&quot;&#123; \\\&quot;a\\\&quot;\\t: 42,\\n  \\\&quot;b\\\&quot;: [ \\\&quot;x\\\&quot;, \\\&quot;y\\\&quot;, 12 ] ,\\n  \\\&quot;c\\\&quot;: &#123; 1\</span><br><span class="line">\&quot;hello\\\&quot; : \\\&quot;world\\\&quot;\\n  &#125;\\n  &#125; \&quot;\n&quot;,</span><br><span class="line">        &#125;,</span><br><span class="line">    ),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>在这里，我们可以看到在解析 <code>&#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125;</code> 时，经过初始 <code>&#123;</code> 后，我们尝试过：</p>
+<ul>
+<li>解析 <code>&quot;</code>，因为我们期望一个键名，而这个解析器是 “string” 解析器的一部分</li>
+<li>解析 <code>&#125;</code>，因为映射可能是空的。当这失败时，我们通过两个递归的映射解析器进行回溯：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x27;&#125;&#x27;:    &quot;1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line">&quot;map&quot;:  &quot;&#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br><span class="line">&quot;map&quot;:  &quot;&#123; \&quot;a\&quot;\t: 42,\n  \&quot;b\&quot;: [ \&quot;x\&quot;, \&quot;y\&quot;, 12 ] ,\n  \&quot;c\&quot;: &#123; 1\&quot;hello\&quot; : \&quot;world\&quot;\n  &#125;\n  &#125; &quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="调试解析器"><a href="#调试解析器" class="headerlink" title="调试解析器"></a>调试解析器</h2><p>在编写解析器时，有时需要跟踪解析器的输入和输出。</p>
+<p>为此，nom 提供了 <code>dbg_dmp</code> 函数，该函数将观察解析器的输入和输出，并在发生错误时打印输入的十六进制转储。以下是它的用法：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">f</span>(i: &amp;[<span class="type">u8</span>]) <span class="punctuation">-&gt;</span> IResult&lt;&amp;[<span class="type">u8</span>], &amp;[<span class="type">u8</span>]&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">dbg_dmp</span>(<span class="title function_ invoke__">tag</span>(<span class="string">&quot;abcd&quot;</span>), <span class="string">&quot;tag&quot;</span>)(i)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">a</span> = &amp;<span class="string">b&quot;efghijkl&quot;</span>[..];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将打印以下消息：</span></span><br><span class="line"><span class="comment">// tag: Error(Error(Error &#123; input: [101, 102, 103, 104, 105, 106, 107, 108], code: Tag &#125;)) at:</span></span><br><span class="line"><span class="comment">// 00000000        65 66 67 68 69 6a 6b 6c         efghijkl</span></span><br><span class="line"><span class="title function_ invoke__">f</span>(a);</span><br></pre></td></tr></table></figure>
+
+<p>您还可以使用 <a target="_blank" rel="noopener" href="https://github.com/rust-bakery/nom-trace">nom-trace crate</a> 进一步调试。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gty20010709.github.io/2024/01/26/nom%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AF%E7%AE%A1%E7%90%86/" data-id="clruf8q7200002cje0176bf0m" data-title="nom中的错误管理" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/error/" rel="tag">error</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nom/" rel="tag">nom</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rust/" rel="tag">rust</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/01/14/Manjaro%E4%B8%8A%E7%9A%84Firefox%E6%AF%8F%E6%AC%A1%E6%9B%B4%E6%96%B0%E5%90%8E%E4%B8%BB%E9%A1%B5%E8%A2%AB%E4%BF%AE%E6%94%B9%E7%9A%84%E9%97%AE%E9%A2%98/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Älter</strong>
+      <div class="article-nav-title">Manjaro上的Firefox每次更新后主页被修改的问题</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Kategorien</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Hexo/">Hexo</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/">Tools</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Firefox/" rel="tag">Firefox</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Manjaro/" rel="tag">Manjaro</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/api/" rel="tag">api</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ascii-art/" rel="tag">ascii art</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/asyncache/" rel="tag">asyncache</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/barrier/" rel="tag">barrier</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/build/" rel="tag">build</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cachetools/" rel="tag">cachetools</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chinese/" rel="tag">chinese</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cloudflare/" rel="tag">cloudflare</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/color/" rel="tag">color</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/coming/" rel="tag">coming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/command-line/" rel="tag">command line</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crack/" rel="tag">crack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cross-compile/" rel="tag">cross compile</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/crossref/" rel="tag">crossref</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dist/" rel="tag">dist</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dpkg/" rel="tag">dpkg</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/error/" rel="tag">error</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/example/" rel="tag">example</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fastapi/" rel="tag">fastapi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewall/" rel="tag">firewall</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish/" rel="tag">fish</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish-shell/" rel="tag">fish-shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/flask/" rel="tag">flask</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fun/" rel="tag">fun</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/" rel="tag">git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/" rel="tag">https</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/image/" rel="tag">image</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ip/" rel="tag">ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jinja2/" rel="tag">jinja2</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kdeconnect/" rel="tag">kdeconnect</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/keyboard/" rel="tag">keyboard</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/language/" rel="tag">language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/latex/" rel="tag">latex</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/limit/" rel="tag">limit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/list/" rel="tag">list</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/maddy/" rel="tag">maddy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mail/" rel="tag">mail</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/man/" rel="tag">man</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/manjaro/" rel="tag">manjaro</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/monitor/" rel="tag">monitor</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nom/" rel="tag">nom</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nvm/" rel="tag">nvm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/oh-my-posh/" rel="tag">oh-my-posh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pool/" rel="tag">pool</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/powsershell/" rel="tag">powsershell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/print/" rel="tag">print</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/proxy/" rel="tag">proxy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/psreadline/" rel="tag">psreadline</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/query/" rel="tag">query</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/retry/" rel="tag">retry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scholar/" rel="tag">scholar</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scoop/" rel="tag">scoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/self-host/" rel="tag">self-host</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/settings/" rel="tag">settings</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/snips/" rel="tag">snips</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/socket/" rel="tag">socket</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/" rel="tag">ssh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssl/" rel="tag">ssl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tex/" rel="tag">tex</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tldr/" rel="tag">tldr</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tutorial/" rel="tag">tutorial</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/typesetting-language/" rel="tag">typesetting language</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ubuntu/" rel="tag">ubuntu</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ufw/" rel="tag">ufw</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/upgrade/" rel="tag">upgrade</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/uvicorn/" rel="tag">uvicorn</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/uwsgi/" rel="tag">uwsgi</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vercel/" rel="tag">vercel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows/" rel="tag">windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/yaml/" rel="tag">yaml</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zip/" rel="tag">zip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zsh/" rel="tag">zsh</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A/" rel="tag">延迟绑定</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82%E8%B0%88/" rel="tag">杂谈</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%97%AD%E5%8C%85/" rel="tag">闭包</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Firefox/" style="font-size: 10px;">Firefox</a> <a href="/tags/Manjaro/" style="font-size: 10px;">Manjaro</a> <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/ascii-art/" style="font-size: 10px;">ascii art</a> <a href="/tags/asyncache/" style="font-size: 10px;">asyncache</a> <a href="/tags/barrier/" style="font-size: 10px;">barrier</a> <a href="/tags/build/" style="font-size: 10px;">build</a> <a href="/tags/cachetools/" style="font-size: 10px;">cachetools</a> <a href="/tags/chinese/" style="font-size: 10px;">chinese</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/color/" style="font-size: 10px;">color</a> <a href="/tags/coming/" style="font-size: 10px;">coming</a> <a href="/tags/command-line/" style="font-size: 10px;">command line</a> <a href="/tags/crack/" style="font-size: 10px;">crack</a> <a href="/tags/cross-compile/" style="font-size: 10px;">cross compile</a> <a href="/tags/crossref/" style="font-size: 10px;">crossref</a> <a href="/tags/dist/" style="font-size: 10px;">dist</a> <a href="/tags/dpkg/" style="font-size: 10px;">dpkg</a> <a href="/tags/error/" style="font-size: 12px;">error</a> <a href="/tags/example/" style="font-size: 10px;">example</a> <a href="/tags/fastapi/" style="font-size: 10px;">fastapi</a> <a href="/tags/firewall/" style="font-size: 10px;">firewall</a> <a href="/tags/fish/" style="font-size: 10px;">fish</a> <a href="/tags/fish-shell/" style="font-size: 10px;">fish-shell</a> <a href="/tags/flask/" style="font-size: 10px;">flask</a> <a href="/tags/fun/" style="font-size: 10px;">fun</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/image/" style="font-size: 10px;">image</a> <a href="/tags/ip/" style="font-size: 12px;">ip</a> <a href="/tags/jinja2/" style="font-size: 10px;">jinja2</a> <a href="/tags/kdeconnect/" style="font-size: 10px;">kdeconnect</a> <a href="/tags/keyboard/" style="font-size: 10px;">keyboard</a> <a href="/tags/language/" style="font-size: 10px;">language</a> <a href="/tags/latex/" style="font-size: 10px;">latex</a> <a href="/tags/limit/" style="font-size: 10px;">limit</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/list/" style="font-size: 10px;">list</a> <a href="/tags/maddy/" style="font-size: 10px;">maddy</a> <a href="/tags/mail/" style="font-size: 10px;">mail</a> <a href="/tags/man/" style="font-size: 10px;">man</a> <a href="/tags/manjaro/" style="font-size: 10px;">manjaro</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/monitor/" style="font-size: 10px;">monitor</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/nom/" style="font-size: 10px;">nom</a> <a href="/tags/nvm/" style="font-size: 10px;">nvm</a> <a href="/tags/oh-my-posh/" style="font-size: 10px;">oh-my-posh</a> <a href="/tags/pool/" style="font-size: 10px;">pool</a> <a href="/tags/powsershell/" style="font-size: 10px;">powsershell</a> <a href="/tags/print/" style="font-size: 12px;">print</a> <a href="/tags/proxy/" style="font-size: 10px;">proxy</a> <a href="/tags/psreadline/" style="font-size: 10px;">psreadline</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/query/" style="font-size: 10px;">query</a> <a href="/tags/retry/" style="font-size: 10px;">retry</a> <a href="/tags/rust/" style="font-size: 14px;">rust</a> <a href="/tags/scholar/" style="font-size: 10px;">scholar</a> <a href="/tags/scoop/" style="font-size: 10px;">scoop</a> <a href="/tags/self-host/" style="font-size: 12px;">self-host</a> <a href="/tags/settings/" style="font-size: 10px;">settings</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/snips/" style="font-size: 10px;">snips</a> <a href="/tags/socket/" style="font-size: 10px;">socket</a> <a href="/tags/ssh/" style="font-size: 12px;">ssh</a> <a href="/tags/ssl/" style="font-size: 10px;">ssl</a> <a href="/tags/tex/" style="font-size: 10px;">tex</a> <a href="/tags/tldr/" style="font-size: 10px;">tldr</a> <a href="/tags/tutorial/" style="font-size: 10px;">tutorial</a> <a href="/tags/typesetting-language/" style="font-size: 10px;">typesetting language</a> <a href="/tags/ubuntu/" style="font-size: 18px;">ubuntu</a> <a href="/tags/ufw/" style="font-size: 10px;">ufw</a> <a href="/tags/upgrade/" style="font-size: 10px;">upgrade</a> <a href="/tags/uvicorn/" style="font-size: 10px;">uvicorn</a> <a href="/tags/uwsgi/" style="font-size: 10px;">uwsgi</a> <a href="/tags/vercel/" style="font-size: 10px;">vercel</a> <a href="/tags/windows/" style="font-size: 12px;">windows</a> <a href="/tags/yaml/" style="font-size: 10px;">yaml</a> <a href="/tags/zip/" style="font-size: 10px;">zip</a> <a href="/tags/zsh/" style="font-size: 10px;">zsh</a> <a href="/tags/%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A/" style="font-size: 10px;">延迟绑定</a> <a href="/tags/%E6%9D%82%E8%B0%88/" style="font-size: 10px;">杂谈</a> <a href="/tags/%E9%97%AD%E5%8C%85/" style="font-size: 10px;">闭包</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archiv</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">November 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">July 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">letzter Beitrag</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/01/26/nom%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AF%E7%AE%A1%E7%90%86/">nom中的错误管理</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/14/Manjaro%E4%B8%8A%E7%9A%84Firefox%E6%AF%8F%E6%AC%A1%E6%9B%B4%E6%96%B0%E5%90%8E%E4%B8%BB%E9%A1%B5%E8%A2%AB%E4%BF%AE%E6%94%B9%E7%9A%84%E9%97%AE%E9%A2%98/">Manjaro上的Firefox每次更新后主页被修改的问题</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/13/nginx-snips/">nginx-snips</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/12/Rust%E4%B8%8A%E7%9A%84%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/">Rust上的交叉编译</a>
+          </li>
+        
+          <li>
+            <a href="/2024/01/07/%E8%AE%A9Rust%E7%BC%96%E8%AF%91%E7%9A%84%E7%A8%8B%E5%BA%8F%E4%BD%93%E7%A7%AF%E6%9C%80%E5%B0%8F/">让Rust编译的程序体积最小</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 Theo Cheng<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
