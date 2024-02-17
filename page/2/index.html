@@ -62,10 +62,10 @@
         
           <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
         
-        <a class="nav-icon nav-search-btn" title="Suche"><span class="fa fa-search"></span></a>
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Suche"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://gty20010709.github.io"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://gty20010709.github.io"></form>
       </div>
     </div>
   </div>
@@ -73,6 +73,72 @@
 
       <div class="outer">
         <section id="main">
+  
+    <article id="post-2023/202311/man与tldr" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/11/16/2023/202311/man%E4%B8%8Etldr/" class="article-date">
+  <time class="dt-published" datetime="2023-11-16T01:20:25.000Z" itemprop="datePublished">2023-11-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/11/16/2023/202311/man%E4%B8%8Etldr/">man与tldr</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="〇、-缘起"><a href="#〇、-缘起" class="headerlink" title="〇、 缘起"></a>〇、 缘起</h2><p>今天早上在吃饭时，我刷了两个视频：<br>    - <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=9g06vSPSlJc&ab_channel=LiuZuoLin">4 Weird (&amp; Less-Used) Built-In Python Data Structures &amp; When To Use Them</a><br>    - <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=ghWECXWi9kU&ab_channel=NeuralNine">5 Awesome Linux Terminal Tools You Must Know</a></p>
+<p>第一个视频讲了 Python 中的 frozenset, defaultdict, deque, namedtuple，基本在我的知识范围内，没啥好记录的；第二个视频中，介绍了几个在 Linux 命令行中的实用工具，我印象最深刻的是用于文件搜索的 fzf 和 用于查看命令用例的 tldr。</p>
+<p>tldr, 我觉得可以在一定程度上取代 man 命令，因此写文记录。此是为缘起。</p>
+<h2 id="一、-man"><a href="#一、-man" class="headerlink" title="一、 man"></a>一、 man</h2><p>Linux 上的 man 命令是 manual （手册）的缩写。假如我对 fzf 命令不够了解，使用 <code>man fzf</code> 去查看手册，大量的文本往往会让人看得头大，一时半会也不知道如何使用命令。但是，如果有一些直观的使用示例和说明，我们是不是一下就能理解 <code>fzf</code> 可以干什么？这其实就是 <code>tldr</code> 所做的事情。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">man fzf</span></span><br><span class="line">fzf(1)                                    fzf - a command-line fuzzy finder                                   fzf(1)</span><br><span class="line"></span><br><span class="line">NAME</span><br><span class="line">       fzf - a command-line fuzzy finder</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">       fzf [options]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">       fzf is a general-purpose command-line fuzzy finder.</span><br><span class="line"></span><br><span class="line">OPTIONS</span><br><span class="line">   Search mode</span><br><span class="line">       -x, --extended</span><br><span class="line">              Extended-search mode. Since 0.10.9, this is enabled by default. You can disable it with +x or --no-ex‐</span><br><span class="line">              tended.</span><br><span class="line"></span><br><span class="line">       -e, --exact</span><br><span class="line">              Enable exact-match</span><br><span class="line"></span><br><span class="line">       -i     Case-insensitive match (default: smart-case match)</span><br><span class="line"></span><br><span class="line">       +i     Case-sensitive match</span><br><span class="line"></span><br><span class="line">       --literal</span><br><span class="line">              Do not normalize latin script letters for matching.</span><br><span class="line"></span><br><span class="line">       --algo=TYPE</span><br><span class="line">              Fuzzy matching algorithm (default: v2)</span><br><span class="line"></span><br><span class="line">              v2     Optimal scoring algorithm (quality)</span><br><span class="line">              v1     Faster but not guaranteed to find the optimal result (performance)</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="二、-tldr"><a href="#二、-tldr" class="headerlink" title="二、 tldr"></a>二、 tldr</h2><p>在英文互联网中，你可能会经常看到 TLDR 这几个字母，它是<code>Too Long; Didn&#39;t Read</code> 的缩写，表示太长未读或太长不想读。tldr 这个命令的名字就来源于此。</p>
+<p>如果我想看看 fzf 命令有哪些常用的用法， 可以输入<code>tldr fzf</code>。</p>
+<p>从下面的输出，我们可以看到。</p>
+<ul>
+<li>fzf 可以与 find 结合使用， 搜索指定目录下的所有文件；</li>
+<li>与 ps 结合使用，搜索正在运行的进程；</li>
+<li>可以将符合条件的多个文件的内容汇总到一个文件（cat命令也能做到）</li>
+<li>可以指定条件进行查询</li>
+<li>…</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tldr fzf</span></span><br><span class="line">fzf</span><br><span class="line">Command-line fuzzy finder.Similar to sk.More information: https://github.com/junegunn/fzf.</span><br><span class="line"></span><br><span class="line"> - Start fzf on all files in the specified directory:</span><br><span class="line">   find &#123;&#123;path/to/directory&#125;&#125; -type f | fzf</span><br><span class="line"></span><br><span class="line"> - Start fzf for running processes:</span><br><span class="line">   ps aux | fzf</span><br><span class="line"></span><br><span class="line"> - Select multiple files with Shift + Tab and write to a file:</span><br><span class="line">   find &#123;&#123;path/to/directory&#125;&#125; -type f | fzf --multi &gt; &#123;&#123;path/to/file&#125;&#125;</span><br><span class="line"></span><br><span class="line"> - Start fzf with a specified query:</span><br><span class="line">   fzf --query &quot;&#123;&#123;query&#125;&#125;&quot;</span><br><span class="line"></span><br><span class="line"> - Start fzf on entries that start with core and end with either go, rb, or py:</span><br><span class="line">   fzf --query &quot;^core go$ | rb$ | py$&quot;</span><br><span class="line"></span><br><span class="line"> - Start fzf on entries that not match pyc and match exactly travis:</span><br><span class="line">   fzf --query &quot;!pyc &#x27;travis&quot;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="四、-cmd-–help"><a href="#四、-cmd-–help" class="headerlink" title="四、 cmd –help"></a>四、 cmd –help</h2><p>有人可能会说，用 <code>--help</code> 参数，查看命令行程序自带的帮助信息，也比 man 简单呀。实际上，对大多数人来说，程序自带的帮助信息也不一定能读得懂，不如直观的例子来得明白。</p>
+<p>比如 <code>fzf --help</code>，依旧很抽象。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">fzf --<span class="built_in">help</span></span></span><br><span class="line">usage: fzf [options]</span><br><span class="line"></span><br><span class="line">  Search</span><br><span class="line">    -x, --extended        Extended-search mode</span><br><span class="line">                          (enabled by default; +x or --no-extended to disable)</span><br><span class="line">    -e, --exact           Enable Exact-match</span><br><span class="line">    --algo=TYPE           Fuzzy matching algorithm: [v1|v2] (default: v2)</span><br><span class="line">    -i                    Case-insensitive match (default: smart-case match)</span><br><span class="line">    +i                    Case-sensitive match</span><br><span class="line">    --literal             Do not normalize latin script letters before matching</span><br><span class="line">    -n, --nth=N[,..]      Comma-separated list of field index expressions</span><br><span class="line">                          for limiting search scope. Each can be a non-zero</span><br><span class="line">                          integer or a range expression ([BEGIN]..[END]).</span><br><span class="line">    --with-nth=N[,..]     Transform the presentation of each line using</span><br><span class="line">                          field index expressions</span><br><span class="line">    -d, --delimiter=STR   Field delimiter regex (default: AWK-style)</span><br><span class="line">    +s, --no-sort         Do not sort the result</span><br><span class="line">    --tac                 Reverse the order of the input</span><br><span class="line">    --disabled            Do not perform search</span><br><span class="line">    --tiebreak=CRI[,..]   Comma-separated list of sort criteria to apply</span><br><span class="line">...</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>tldr 或许是快节奏社会节奏的产物，很多时候，静心去读手册（manul）是难得乃至不可能的事情了。</p>
+<p>tldr 只是辅助快速上手一个工具，真正的掌握，还是要基于对手册的理解和精读 + 练习 来实现的。手册博大精深，很多时候不仅能学到一个命令的使用，还能学到一个命令的设计思想、历史沿革等等。 </p>
+<p>PS: make 的手册，pdf档有200多页。 <a target="_blank" rel="noopener" href="https://www.gnu.org/software/make/manual/make.pdf">GNU make manual</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://gty20010709.github.io/2023/11/16/2023/202311/man%E4%B8%8Etldr/" data-id="clr3f9hbp001vk6z94v1ie2am" data-title="man与tldr" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/command-line/" rel="tag">command line</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/man/" rel="tag">man</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tldr/" rel="tag">tldr</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
   
     <article id="post-2023/202311/ssh笔记" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
@@ -108,7 +174,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/11/15/2023/202311/ssh%E7%AC%94%E8%AE%B0/" data-id="clr3f9hbq001xk6z97ella3z8" data-title="ssh笔记" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/11/15/2023/202311/ssh%E7%AC%94%E8%AE%B0/" data-id="clr3f9hbq001xk6z97ella3z8" data-title="ssh笔记" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -159,7 +225,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/11/15/2023/202311/%E7%94%A8Python%E4%BB%8E%E5%9B%BE%E7%89%87%E5%88%9B%E5%BB%BAASCII-Art/" data-id="clr3f9hbr0021k6z95mnedy5z" data-title="用Python从图片创建ASCII-Art" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/11/15/2023/202311/%E7%94%A8Python%E4%BB%8E%E5%9B%BE%E7%89%87%E5%88%9B%E5%BB%BAASCII-Art/" data-id="clr3f9hbr0021k6z95mnedy5z" data-title="用Python从图片创建ASCII-Art" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -207,7 +273,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/11/14/2023/202311/Python%E4%B8%AD%E7%9A%84%E9%87%8D%E8%AF%95%E2%80%94%E2%80%94retry/" data-id="clr3f9hbp001tk6z9b1b741vs" data-title="Python中的重试——retry" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/11/14/2023/202311/Python%E4%B8%AD%E7%9A%84%E9%87%8D%E8%AF%95%E2%80%94%E2%80%94retry/" data-id="clr3f9hbp001tk6z9b1b741vs" data-title="Python中的重试——retry" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -252,7 +318,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/11/13/2023/202311/%E7%94%A8Python%E7%BB%98%E5%88%B6%E4%B8%80%E5%8F%AA%E5%A5%94%E8%B7%91%E7%9A%84%E5%B0%8F%E9%A9%AC/" data-id="clr3f9hbs0023k6z96vdgbi94" data-title="用Python绘制一只奔跑的小马" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/11/13/2023/202311/%E7%94%A8Python%E7%BB%98%E5%88%B6%E4%B8%80%E5%8F%AA%E5%A5%94%E8%B7%91%E7%9A%84%E5%B0%8F%E9%A9%AC/" data-id="clr3f9hbs0023k6z96vdgbi94" data-title="用Python绘制一只奔跑的小马" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -307,7 +373,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/11/09/2023/202311/%E6%88%91%E7%9A%84git%E7%AC%94%E8%AE%B0/" data-id="clr3f9hbq001zk6z9h881ddta" data-title="我的git笔记" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/11/09/2023/202311/%E6%88%91%E7%9A%84git%E7%AC%94%E8%AE%B0/" data-id="clr3f9hbq001zk6z9h881ddta" data-title="我的git笔记" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -354,7 +420,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/11/07/2023/202311/Python%E4%B8%AD%E7%9A%84%E5%BD%A9%E8%89%B2%E6%89%93%E5%8D%B0/" data-id="clr3f9hbo001rk6z9a4p28lue" data-title="Python中的彩色打印" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/11/07/2023/202311/Python%E4%B8%AD%E7%9A%84%E5%BD%A9%E8%89%B2%E6%89%93%E5%8D%B0/" data-id="clr3f9hbo001rk6z9a4p28lue" data-title="Python中的彩色打印" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -427,7 +493,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/11/05/2023/202311/%E8%87%AA%E5%BB%BAip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B9%8B%E8%AE%BE%E6%83%B3/" data-id="clr3f9hbs0025k6z98atuee1y" data-title="自建ip代理池之设想" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/11/05/2023/202311/%E8%87%AA%E5%BB%BAip%E4%BB%A3%E7%90%86%E6%B1%A0%E4%B9%8B%E8%AE%BE%E6%83%B3/" data-id="clr3f9hbs0025k6z98atuee1y" data-title="自建ip代理池之设想" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -600,7 +666,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/11/04/2023/202311/%E8%87%AA%E5%BB%BA%E9%82%AE%E7%AE%B1%E6%9C%8D%E5%8A%A1%E4%B9%8B%E8%AE%B0%E5%BD%95/" data-id="clr3f9hbt0027k6z9cl6v8zc7" data-title="自建邮箱服务之记录" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/11/04/2023/202311/%E8%87%AA%E5%BB%BA%E9%82%AE%E7%AE%B1%E6%9C%8D%E5%8A%A1%E4%B9%8B%E8%AE%B0%E5%BD%95/" data-id="clr3f9hbt0027k6z9cl6v8zc7" data-title="自建邮箱服务之记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -641,7 +707,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/10/31/2023/202310/scoop%E6%89%80%E9%81%87%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/" data-id="clr3f9hbv002fk6z9c94phuev" data-title="scoop所遇问题记录" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
+      <a data-url="https://gty20010709.github.io/2023/10/31/2023/202310/scoop%E6%89%80%E9%81%87%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/" data-id="clr3f9hbv002fk6z9c94phuev" data-title="scoop所遇问题记录" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -655,96 +721,11 @@
 
 
   
-    <article id="post-2023/202310/PowerShell功能补全指南" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2023/10/29/2023/202310/PowerShell%E5%8A%9F%E8%83%BD%E8%A1%A5%E5%85%A8%E6%8C%87%E5%8D%97/" class="article-date">
-  <time class="dt-published" datetime="2023-10-29T11:28:23.000Z" itemprop="datePublished">2023-10-29</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/10/29/2023/202310/PowerShell%E5%8A%9F%E8%83%BD%E8%A1%A5%E5%85%A8%E6%8C%87%E5%8D%97/">PowerShell功能补全指南</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="〇、缘起"><a href="#〇、缘起" class="headerlink" title="〇、缘起"></a>〇、缘起</h2><p>因为一些外部原因，我又用回了 Windows， 我决定行动起来，改变我在使用 PowerShell 时遇到的痛点。</p>
-<h2 id="一、痛点及解诀方案"><a href="#一、痛点及解诀方案" class="headerlink" title="一、痛点及解诀方案"></a>一、痛点及解诀方案</h2><ul>
-<li>根据我使用中所遇的持续更新…</li>
-<li>需<code>scoop</code>包管理器（<a target="_blank" rel="noopener" href="https://scoop.sh/">Scoop官网</a>）</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>痛点</th>
-<th>解诀方案</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>touch 新建文件</td>
-<td><code>scoop install psutils</code></td>
-</tr>
-<tr>
-<td>sudo 使用管理员权限丸行命令</td>
-<td><code>scoop install psutils</code></td>
-</tr>
-<tr>
-<td>less 在命令行中快速查看文本文件</td>
-<td><code>scoop install less</code></td>
-</tr>
-<tr>
-<td>Fish 那样的命令提示</td>
-<td>PowerShell Module: <code>PSReadline</code></td>
-</tr>
-<tr>
-<td>快速在 Ternimal 中配置 alias、环境变量等</td>
-<td>编缉<code>$profile</code></td>
-</tr>
-<tr>
-<td>多功能提示符(prompt)</td>
-<td>安装<a target="_blank" rel="noopener" href="https://ohmyposh.dev/">oh my posh</a></td>
-</tr>
-<tr>
-<td><code>mkdir</code>建立多个文件来</td>
-<td><code>mkdir folder1,folder2,folder3</code></td>
-</tr>
-<tr>
-<td>which $cmd</td>
-<td>Get-Command $cmd</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://gty20010709.github.io/2023/10/29/2023/202310/PowerShell%E5%8A%9F%E8%83%BD%E8%A1%A5%E5%85%A8%E6%8C%87%E5%8D%97/" data-id="clr3f9hbt0029k6z92z2s9tc2" data-title="PowerShell功能补全指南" class="article-share-link"><span class="fa fa-share">Teilen</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oh-my-posh/" rel="tag">oh-my-posh</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/powsershell/" rel="tag">powsershell</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/psreadline/" rel="tag">psreadline</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
     
-    <a class="extend prev" rel="prev" href="/">&laquo; zurück</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">weiter &raquo;</a>
+    <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
   </nav>
 
 </section>
@@ -753,7 +734,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Kategorien</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Hexo/">Hexo</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/">Tools</a></li></ul>
     </div>
@@ -775,16 +756,16 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Firefox/" style="font-size: 10px;">Firefox</a> <a href="/tags/Manjaro/" style="font-size: 10px;">Manjaro</a> <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/ascii-art/" style="font-size: 10px;">ascii art</a> <a href="/tags/asyncache/" style="font-size: 10px;">asyncache</a> <a href="/tags/barrier/" style="font-size: 10px;">barrier</a> <a href="/tags/build/" style="font-size: 10px;">build</a> <a href="/tags/cachetools/" style="font-size: 10px;">cachetools</a> <a href="/tags/chinese/" style="font-size: 10px;">chinese</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/color/" style="font-size: 10px;">color</a> <a href="/tags/coming/" style="font-size: 10px;">coming</a> <a href="/tags/command-line/" style="font-size: 10px;">command line</a> <a href="/tags/crack/" style="font-size: 10px;">crack</a> <a href="/tags/cross-compile/" style="font-size: 10px;">cross compile</a> <a href="/tags/crossref/" style="font-size: 10px;">crossref</a> <a href="/tags/dist/" style="font-size: 10px;">dist</a> <a href="/tags/dpkg/" style="font-size: 10px;">dpkg</a> <a href="/tags/error/" style="font-size: 12px;">error</a> <a href="/tags/example/" style="font-size: 10px;">example</a> <a href="/tags/fastapi/" style="font-size: 10px;">fastapi</a> <a href="/tags/firewall/" style="font-size: 10px;">firewall</a> <a href="/tags/fish/" style="font-size: 10px;">fish</a> <a href="/tags/fish-shell/" style="font-size: 10px;">fish-shell</a> <a href="/tags/flask/" style="font-size: 10px;">flask</a> <a href="/tags/fun/" style="font-size: 10px;">fun</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/image/" style="font-size: 10px;">image</a> <a href="/tags/ip/" style="font-size: 12px;">ip</a> <a href="/tags/jinja2/" style="font-size: 10px;">jinja2</a> <a href="/tags/kdeconnect/" style="font-size: 10px;">kdeconnect</a> <a href="/tags/keyboard/" style="font-size: 10px;">keyboard</a> <a href="/tags/language/" style="font-size: 10px;">language</a> <a href="/tags/latex/" style="font-size: 10px;">latex</a> <a href="/tags/limit/" style="font-size: 10px;">limit</a> <a href="/tags/linux/" style="font-size: 16px;">linux</a> <a href="/tags/list/" style="font-size: 10px;">list</a> <a href="/tags/maddy/" style="font-size: 10px;">maddy</a> <a href="/tags/mail/" style="font-size: 10px;">mail</a> <a href="/tags/man/" style="font-size: 10px;">man</a> <a href="/tags/manjaro/" style="font-size: 10px;">manjaro</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/monitor/" style="font-size: 10px;">monitor</a> <a href="/tags/nginx/" style="font-size: 10px;">nginx</a> <a href="/tags/nom/" style="font-size: 10px;">nom</a> <a href="/tags/nvm/" style="font-size: 10px;">nvm</a> <a href="/tags/oh-my-posh/" style="font-size: 10px;">oh-my-posh</a> <a href="/tags/pool/" style="font-size: 10px;">pool</a> <a href="/tags/powsershell/" style="font-size: 10px;">powsershell</a> <a href="/tags/print/" style="font-size: 12px;">print</a> <a href="/tags/proxy/" style="font-size: 10px;">proxy</a> <a href="/tags/psreadline/" style="font-size: 10px;">psreadline</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/query/" style="font-size: 10px;">query</a> <a href="/tags/retry/" style="font-size: 10px;">retry</a> <a href="/tags/rust/" style="font-size: 14px;">rust</a> <a href="/tags/scholar/" style="font-size: 10px;">scholar</a> <a href="/tags/scoop/" style="font-size: 10px;">scoop</a> <a href="/tags/self-host/" style="font-size: 12px;">self-host</a> <a href="/tags/settings/" style="font-size: 10px;">settings</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/snips/" style="font-size: 10px;">snips</a> <a href="/tags/socket/" style="font-size: 10px;">socket</a> <a href="/tags/ssh/" style="font-size: 12px;">ssh</a> <a href="/tags/ssl/" style="font-size: 10px;">ssl</a> <a href="/tags/tex/" style="font-size: 10px;">tex</a> <a href="/tags/tldr/" style="font-size: 10px;">tldr</a> <a href="/tags/tutorial/" style="font-size: 10px;">tutorial</a> <a href="/tags/typesetting-language/" style="font-size: 10px;">typesetting language</a> <a href="/tags/ubuntu/" style="font-size: 18px;">ubuntu</a> <a href="/tags/ufw/" style="font-size: 10px;">ufw</a> <a href="/tags/upgrade/" style="font-size: 10px;">upgrade</a> <a href="/tags/uvicorn/" style="font-size: 10px;">uvicorn</a> <a href="/tags/uwsgi/" style="font-size: 10px;">uwsgi</a> <a href="/tags/vercel/" style="font-size: 10px;">vercel</a> <a href="/tags/windows/" style="font-size: 12px;">windows</a> <a href="/tags/yaml/" style="font-size: 10px;">yaml</a> <a href="/tags/zip/" style="font-size: 10px;">zip</a> <a href="/tags/zsh/" style="font-size: 10px;">zsh</a> <a href="/tags/%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A/" style="font-size: 10px;">延迟绑定</a> <a href="/tags/%E6%9D%82%E8%B0%88/" style="font-size: 10px;">杂谈</a> <a href="/tags/%E9%97%AD%E5%8C%85/" style="font-size: 10px;">闭包</a>
+      <a href="/tags/Firefox/" style="font-size: 10px;">Firefox</a> <a href="/tags/Manjaro/" style="font-size: 10px;">Manjaro</a> <a href="/tags/api/" style="font-size: 10px;">api</a> <a href="/tags/ascii-art/" style="font-size: 10px;">ascii art</a> <a href="/tags/asyncache/" style="font-size: 10px;">asyncache</a> <a href="/tags/barrier/" style="font-size: 10px;">barrier</a> <a href="/tags/build/" style="font-size: 10px;">build</a> <a href="/tags/cachetools/" style="font-size: 10px;">cachetools</a> <a href="/tags/chinese/" style="font-size: 10px;">chinese</a> <a href="/tags/cloudflare/" style="font-size: 10px;">cloudflare</a> <a href="/tags/color/" style="font-size: 10px;">color</a> <a href="/tags/coming/" style="font-size: 10px;">coming</a> <a href="/tags/command-line/" style="font-size: 10px;">command line</a> <a href="/tags/crack/" style="font-size: 10px;">crack</a> <a href="/tags/cross-compile/" style="font-size: 10px;">cross compile</a> <a href="/tags/crossref/" style="font-size: 10px;">crossref</a> <a href="/tags/dist/" style="font-size: 10px;">dist</a> <a href="/tags/dpkg/" style="font-size: 10px;">dpkg</a> <a href="/tags/error/" style="font-size: 12.5px;">error</a> <a href="/tags/example/" style="font-size: 10px;">example</a> <a href="/tags/fastapi/" style="font-size: 10px;">fastapi</a> <a href="/tags/firewall/" style="font-size: 10px;">firewall</a> <a href="/tags/fish/" style="font-size: 10px;">fish</a> <a href="/tags/fish-shell/" style="font-size: 10px;">fish-shell</a> <a href="/tags/flask/" style="font-size: 10px;">flask</a> <a href="/tags/fun/" style="font-size: 10px;">fun</a> <a href="/tags/git/" style="font-size: 10px;">git</a> <a href="/tags/hexo/" style="font-size: 10px;">hexo</a> <a href="/tags/https/" style="font-size: 10px;">https</a> <a href="/tags/image/" style="font-size: 10px;">image</a> <a href="/tags/ip/" style="font-size: 12.5px;">ip</a> <a href="/tags/jinja2/" style="font-size: 10px;">jinja2</a> <a href="/tags/kdeconnect/" style="font-size: 10px;">kdeconnect</a> <a href="/tags/keyboard/" style="font-size: 10px;">keyboard</a> <a href="/tags/language/" style="font-size: 10px;">language</a> <a href="/tags/latex/" style="font-size: 10px;">latex</a> <a href="/tags/limit/" style="font-size: 10px;">limit</a> <a href="/tags/linux/" style="font-size: 17.5px;">linux</a> <a href="/tags/list/" style="font-size: 10px;">list</a> <a href="/tags/maddy/" style="font-size: 10px;">maddy</a> <a href="/tags/mail/" style="font-size: 10px;">mail</a> <a href="/tags/man/" style="font-size: 10px;">man</a> <a href="/tags/manjaro/" style="font-size: 10px;">manjaro</a> <a href="/tags/mongodb/" style="font-size: 10px;">mongodb</a> <a href="/tags/monitor/" style="font-size: 10px;">monitor</a> <a href="/tags/nginx/" style="font-size: 12.5px;">nginx</a> <a href="/tags/nom/" style="font-size: 10px;">nom</a> <a href="/tags/nvm/" style="font-size: 10px;">nvm</a> <a href="/tags/oh-my-posh/" style="font-size: 10px;">oh-my-posh</a> <a href="/tags/pool/" style="font-size: 10px;">pool</a> <a href="/tags/powsershell/" style="font-size: 10px;">powsershell</a> <a href="/tags/print/" style="font-size: 12.5px;">print</a> <a href="/tags/proxy/" style="font-size: 10px;">proxy</a> <a href="/tags/psreadline/" style="font-size: 10px;">psreadline</a> <a href="/tags/python/" style="font-size: 20px;">python</a> <a href="/tags/query/" style="font-size: 10px;">query</a> <a href="/tags/retry/" style="font-size: 10px;">retry</a> <a href="/tags/rust/" style="font-size: 15px;">rust</a> <a href="/tags/scholar/" style="font-size: 10px;">scholar</a> <a href="/tags/scoop/" style="font-size: 10px;">scoop</a> <a href="/tags/self-host/" style="font-size: 12.5px;">self-host</a> <a href="/tags/settings/" style="font-size: 10px;">settings</a> <a href="/tags/shell/" style="font-size: 10px;">shell</a> <a href="/tags/snips/" style="font-size: 10px;">snips</a> <a href="/tags/socket/" style="font-size: 10px;">socket</a> <a href="/tags/ssh/" style="font-size: 12.5px;">ssh</a> <a href="/tags/ssl/" style="font-size: 10px;">ssl</a> <a href="/tags/tex/" style="font-size: 10px;">tex</a> <a href="/tags/tldr/" style="font-size: 10px;">tldr</a> <a href="/tags/tutorial/" style="font-size: 10px;">tutorial</a> <a href="/tags/typesetting-language/" style="font-size: 10px;">typesetting language</a> <a href="/tags/ubuntu/" style="font-size: 17.5px;">ubuntu</a> <a href="/tags/ufw/" style="font-size: 10px;">ufw</a> <a href="/tags/upgrade/" style="font-size: 10px;">upgrade</a> <a href="/tags/uvicorn/" style="font-size: 10px;">uvicorn</a> <a href="/tags/uwsgi/" style="font-size: 10px;">uwsgi</a> <a href="/tags/vercel/" style="font-size: 10px;">vercel</a> <a href="/tags/windows/" style="font-size: 12.5px;">windows</a> <a href="/tags/yaml/" style="font-size: 10px;">yaml</a> <a href="/tags/zip/" style="font-size: 10px;">zip</a> <a href="/tags/zsh/" style="font-size: 10px;">zsh</a> <a href="/tags/%E5%BB%B6%E8%BF%9F%E7%BB%91%E5%AE%9A/" style="font-size: 10px;">延迟绑定</a> <a href="/tags/%E6%9D%82%E8%B0%88/" style="font-size: 10px;">杂谈</a> <a href="/tags/%E9%97%AD%E5%8C%85/" style="font-size: 10px;">闭包</a>
     </div>
   </div>
 
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archiv</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">November 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">July 2023</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">February 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/01/">January 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/12/">December 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/11/">November 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/10/">October 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/09/">September 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/08/">August 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/07/">July 2023</a></li></ul>
     </div>
   </div>
 
@@ -792,9 +773,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">letzter Beitrag</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2024/02/17/%E5%9C%A8Debian%E4%B8%AD%E9%87%8D%E8%A3%85Nignx/">在Debian中重装Nignx</a>
+          </li>
         
           <li>
             <a href="/2024/01/26/nom%E4%B8%AD%E7%9A%84%E9%94%99%E8%AF%AF%E7%AE%A1%E7%90%86/">nom中的错误管理</a>
@@ -810,10 +795,6 @@
         
           <li>
             <a href="/2024/01/12/Rust%E4%B8%8A%E7%9A%84%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/">Rust上的交叉编译</a>
-          </li>
-        
-          <li>
-            <a href="/2024/01/07/%E8%AE%A9Rust%E7%BC%96%E8%AF%91%E7%9A%84%E7%A8%8B%E5%BA%8F%E4%BD%93%E7%A7%AF%E6%9C%80%E5%B0%8F/">让Rust编译的程序体积最小</a>
           </li>
         
       </ul>
